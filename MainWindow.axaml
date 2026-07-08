@@ -1,0 +1,78 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="MyAvaloniaApp.MainWindow"
+        Title="MyAvaloniaApp">
+    <Window.Styles>
+        <StyleInclude Source="avares://Avalonia.Controls.DataGrid/Themes/Simple.xaml"/>
+    </Window.Styles>
+
+    <Grid RowDefinitions="Auto, *, Auto" ColumnDefinitions="*">
+        <!-- Верхняя панель: меню (Файл, Сервис, Справка) -->
+        <Border Grid.Row="0" Grid.Column="0"
+                Background="#F0F0F0" BorderBrush="#CCCCCC" BorderThickness="0,0,0,1"
+                Padding="4">
+            <Menu Name="MainMenu" HorizontalAlignment="Left">
+                <MenuItem Header="Файл">
+                    <MenuItem Header="Выход" Name="MenuExit"/>
+                </MenuItem>
+                <MenuItem Header="Сервис">
+                    <MenuItem Header="Поверители" Name="MenuInspector"/>
+                    <MenuItem Header="Эталоны" Name="MenuTemplate"/>
+                    <MenuItem Header="Приборы" Name="MenuDevice" Click="MenuDeviceClicked"/>
+                </MenuItem>
+                <MenuItem Header="Справка">
+                    <MenuItem Header="Помощь" Name="MenuHelp"/>
+                    <MenuItem Header="О программе" Name="MenuAboutHelp"/>
+                </MenuItem>
+            </Menu>
+        </Border>
+
+        <!-- Центральная часть: список + панель действий -->
+        <Grid Grid.Row="1" Grid.Column="0"
+              ColumnDefinitions="*, 240" RowDefinitions="*">
+            
+            <!-- Список поверок -->
+            <Border Grid.Column="0" BorderBrush="#CCCCCC" BorderThickness="1" Margin="4">
+                <DataGrid Name="VerificationsGrid"
+                          AutoGenerateColumns="False"
+                          CanUserSortColumns="True"
+                          CanUserResizeColumns="True"
+                          HeadersVisibility="Column"
+                          GridLinesVisibility="Horizontal"
+                          
+                          BorderThickness="0">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="№ поверки"  Width="80"/>
+                        <DataGridTextColumn Header="Дата"  Width="100"/>
+                        <DataGridTextColumn Header="Время" Width="100"/>
+                        <DataGridTextColumn Header="Состояние поверки"  Width="*"/>
+                        <DataGridTextColumn Header="Комментарий"  Width="*"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </Border>
+
+            <!-- Панель действий -->
+            <Border Grid.Column="1" BorderBrush="#CCCCCC" BorderThickness="1" Margin="4">
+                <StackPanel Margin="8" Spacing="6">
+                    <TextBlock Text="Действия со списком" FontWeight="Bold" Margin="0,0,0,8"/>
+                    <Button Name="BtnNewVerification" Content="Начать новую поверку" Margin="0,2"/>
+                    <Button Name="BtnContinueVerification" Content="Продолжить поверку" Margin="0,2"/>
+                    <Button Name="BtnFromTemplate" Content="На основе шаблона…" Margin="0,2"/>
+                    <Button Name="BtnSearchVerification" Content="Поиск поверки" Margin="0,2"/>
+                    <Button Name="BtnDeleteVerification" Content="Удалить поверку" Margin="0,2"/>
+                </StackPanel>
+            </Border>
+        </Grid>
+
+        <!-- Нижняя строка статуса -->
+        <Border Grid.Row="2" Grid.Column="0"
+                Background="#F5F5F5" BorderBrush="#CCCCCC" BorderThickness="1,0,1,1"
+                Padding="8">
+            <TextBlock Name="StatusText" Text="Статус: Ожидание соединения с БД"
+                       Foreground="#555555" VerticalAlignment="Center"/>
+        </Border>
+    </Grid>
+</Window>
