@@ -1,0 +1,86 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="1024" d:DesignHeight="768"
+        x:Class="MyAvaloniaApp.Views.AddTemplateWindow"
+        Title="Список доступных поверяемых приборов" Width="1024" Height="768">
+
+        <Grid Margin="12" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto">
+
+        <!-- Тип устройства (ComboBox) -->
+        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,12" Spacing="8">
+            <TextBlock Text="Тип устройства:" VerticalAlignment="Center" Width="120"/>
+            <ComboBox Width="300" SelectedIndex="0">
+                <ComboBoxItem>Эталон давления</ComboBoxItem>
+                <ComboBoxItem>Эталон тока</ComboBoxItem>
+                <ComboBoxItem>Эталон температуры</ComboBoxItem>
+            </ComboBox>
+        </StackPanel>
+
+        <!-- Основные сведения об эталоне (GroupBox) -->
+        <GroupBox Grid.Row="1" Header="Основные сведения об эталоне" Margin="0,0,0,12">
+            <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto">
+                <TextBlock Grid.Row="0" Grid.Column="0" Text="Полное наименование эталона:" Margin="6,4,6,4"/>
+                <TextBox Grid.Row="0" Grid.Column="1" Margin="6,4,6,4"/>
+
+                <TextBlock Grid.Row="1" Grid.Column="0" Text="Серийный номер:" Margin="6,4,6,4"/>
+                <TextBox Grid.Row="1" Grid.Column="1" Margin="6,4,6,4"/>
+            </Grid>
+        </GroupBox>
+
+        <!-- Погрешность измерений эталона (GroupBox) -->
+        <GroupBox Grid.Row="2" Header="Погрешность измерений эталона" Margin="0,0,0,12">
+            <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto">
+                <TextBlock Grid.Row="0" Grid.Column="0" Text="Погрешность:" Margin="6,4,6,4"/>
+                <TextBox Grid.Row="0" Grid.Column="1" Margin="6,4,6,4"/>
+
+                <TextBlock Grid.Row="1" Grid.Column="0" Text="Способ нормировки погрешности измерений эталона:" Margin="6,4,6,4"/>
+                <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal" Spacing="16">
+                    <RadioButton Content="%Д" IsChecked="True" Margin="0,4,0,4"/>
+                    <RadioButton Content="%Д / %ИВ" Margin="0,4,0,4"/>
+                    <RadioButton Content="%ИВ + Const" Margin="0,4,0,4"/>
+                    <RadioButton Content="Абс." Margin="0,4,0,4"/>
+                </StackPanel>
+            </Grid>
+        </GroupBox>
+
+        <!-- Настройка рабочего диапазона (GroupBox) -->
+        <GroupBox Grid.Row="3" Header="Настройка рабочего диапазона" Margin="0,0,0,12">
+            <Grid ColumnDefinitions="*,*" RowDefinitions="Auto">
+                <TextBlock Grid.Row="0" Grid.Column="0" Text="Текущий диапазон:" Margin="6,4,6,4"/>
+                <ComboBox Grid.Row="0" Grid.Column="1" Width="200" Margin="6,4,6,4">
+                    <ComboBoxItem>Диапазон 1</ComboBoxItem>
+                    <ComboBoxItem>Диапазон 2</ComboBoxItem>
+                    <ComboBoxItem>Диапазон 3</ComboBoxItem>
+                </ComboBox>
+            </Grid>
+        </GroupBox>
+
+        <!-- Параметры рабочего диапазона (GroupBox) -->
+        <GroupBox Grid.Row="4" Header="Параметры рабочего диапазона" Margin="0,0,0,12">
+            <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto,Auto">
+                <TextBlock Grid.Row="0" Grid.Column="0" Text="Единицы измерения:" Margin="6,4,6,4"/>
+                <ComboBox Grid.Row="0" Grid.Column="1" Width="200" Margin="6,4,6,4">
+                    <ComboBoxItem>Па</ComboBoxItem>
+                    <ComboBoxItem>кПа</ComboBoxItem>
+                    <ComboBoxItem>мА</ComboBoxItem>
+                    <ComboBoxItem>В</ComboBoxItem>
+                </ComboBox>
+
+                <TextBlock Grid.Row="1" Grid.Column="0" Text="НПИ:" Margin="6,4,6,4"/>
+                <TextBox Grid.Row="1" Grid.Column="1" Margin="6,4,6,4"/>
+
+                <TextBlock Grid.Row="2" Grid.Column="0" Text="ВПИ:" Margin="6,4,6,4"/>
+                <TextBox Grid.Row="2" Grid.Column="1" Margin="6,4,6,4"/>
+            </Grid>
+        </GroupBox>
+
+        <!-- Кнопки OK и Отмена (внизу, прижаты вправо) -->
+        <StackPanel Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2"
+                    HorizontalAlignment="Right" Orientation="Horizontal" Spacing="12" Margin="0,16,0,0">
+            <Button Content="OK" Width="80"/>
+            <Button Content="Отмена" Width="80"/>
+        </StackPanel>
+    </Grid>
+</Window>

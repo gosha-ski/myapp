@@ -25,4 +25,13 @@ public partial class MainWindow : Window
         var dialog = new InspectorListWindow();
         dialog.ShowDialog(this);   
     }
+
+    public void MenuTemplateClicked(object? sender, RoutedEventArgs e)
+    {
+        Console.WriteLine("TEMPLATE LIST");
+        var dialog = new TemplateListWindow();
+        dialog.ShowDialog(this);   
+    }
+
+
 }
