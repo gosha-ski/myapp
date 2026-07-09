@@ -1,0 +1,52 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:models="using:MyAvaloniaApp.Models"
+        mc:Ignorable="d" d:DesignWidth="1024" d:DesignHeight="768"
+        x:Class="MyAvaloniaApp.Views.AddInspectorWindow"
+        Title="Список доступных поверяемых приборов" Width="1024" Height="768">
+        <Grid RowDefinitions="Auto, Auto, Auto, Auto, *" ColumnDefinitions="*, 2*" Margin="20">
+        
+        <!-- Заголовок -->
+        <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"
+                   Text="Данные нового поверителя"
+                   FontSize="18" FontWeight="Bold" Margin="0,0,0,20"
+                   HorizontalAlignment="Center"/>
+
+        <!-- Фамилия -->
+        <TextBlock Grid.Row="1" Grid.Column="0"
+                   Text="Фамилия:" VerticalAlignment="Center"
+                   Margin="0,0,10,10"/>
+        <TextBox Grid.Row="1" Grid.Column="1"
+                 x:Name="TxtLastName"
+                 Watermark="Введите фамилию" Margin="0,0,0,10"/>
+
+        <!-- Имя -->
+        <TextBlock Grid.Row="2" Grid.Column="0"
+                   Text="Имя:" VerticalAlignment="Center"
+                   Margin="0,0,10,10"/>
+        <TextBox Grid.Row="2" Grid.Column="1"
+                 x:Name="TxtFirstName"
+                 Watermark="Введите имя" Margin="0,0,0,10"/>
+
+        <!-- Отчество -->
+        <TextBlock Grid.Row="3" Grid.Column="0"
+                   Text="Отчество:" VerticalAlignment="Center"
+                   Margin="0,0,10,10"/>
+        <TextBox Grid.Row="3" Grid.Column="1"
+                 x:Name="TxtMiddleName"
+                 Watermark="Введите отчество" Margin="0,0,0,10"/>
+
+        <!-- Кнопки -->
+        <StackPanel Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2"
+                    Orientation="Horizontal" HorizontalAlignment="Right" Spacing="10" Margin="0,20,0,0">
+            
+            <Button x:Name="BtnSaveInspector" Content="Сохранить" Width="100" Classes="Accent" Click="BtnSaveInspectorClicked"/>
+            <Button x:Name="BtnCancel" Content="Отмена" Width="100"/>
+        </StackPanel>
+
+    </Grid>
+
+
+</Window>

@@ -19,7 +19,7 @@
                     <MenuItem Header="Выход" Name="MenuExit"/>
                 </MenuItem>
                 <MenuItem Header="Сервис">
-                    <MenuItem Header="Поверители" Name="MenuInspector"/>
+                    <MenuItem Header="Поверители" Name="MenuInspector" Click="MenuInspectorClicked"/>
                     <MenuItem Header="Эталоны" Name="MenuTemplate"/>
                     <MenuItem Header="Приборы" Name="MenuDevice" Click="MenuDeviceClicked"/>
                 </MenuItem>

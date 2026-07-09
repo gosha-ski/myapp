@@ -1,0 +1,73 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:models="clr-namespace:MyAvaloniaApp.Models"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="MyAvaloniaApp.Views.InspectorListWindow"
+        Title="Список доступных поверителей"
+        Width="1000" Height="700">
+
+    <Grid RowDefinitions="Auto, *, Auto" ColumnDefinitions="*, 220">
+        
+        <!-- Заголовок окна (над всей сеткой) -->
+        <Border Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"
+                Padding="10" Background="#F5F5F5" BorderBrush="#CCCCCC" BorderThickness="0,0,0,1">
+            <TextBlock Text="Список доступных поверителей" 
+                       FontSize="16" FontWeight="Bold" VerticalAlignment="Center"/>
+        </Border>
+
+        <!-- ЛЕВАЯ ЧАСТЬ: Таблица с данными -->
+        <Border Grid.Row="1" Grid.Column="0"
+                BorderBrush="#CCCCCC" BorderThickness="0,0,1,0" Margin="5">
+            <DataGrid x:Name="InspectorsGrid"
+                      AutoGenerateColumns="False"
+                      CanUserSortColumns="True"
+                      CanUserResizeColumns="True"
+                      GridLinesVisibility="Horizontal"
+                      x:DataType="models:InspectorModel" 
+                      >
+                
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Фамилия" Binding="{Binding LastName}"  Width="*" />
+                    <DataGridTextColumn Header="Имя" Binding="{Binding LastName}" Width="*" />
+                    <DataGridTextColumn Header="Отчество"  Binding="{Binding LastName}" Width="*" />
+                </DataGrid.Columns>
+            </DataGrid>
+        </Border>
+
+        <!-- ПРАВАЯ ЧАСТЬ: Панель действий -->
+        <Border Grid.Row="1" Grid.Column="1"
+                Padding="10" Margin="5" BorderBrush="#CCCCCC" BorderThickness="1">
+            <StackPanel Spacing="10">
+                <TextBlock Text="Действия со списком" 
+                           FontWeight="Bold" FontSize="14" Margin="0,0,0,10"/>
+                
+                <Button x:Name="BtnAdd" Content="Добавить поверителя" 
+                        Classes="Accent" Margin="0" Click="BtnAddInspectorClicked"/>
+                <Button x:Name="BtnEdit" Content="Редактировать данные" 
+                        Margin="0"/>
+                <Button x:Name="BtnDelete" Content="Удалить поверителя" 
+                        Margin="0" Click="BtnDeleteInspectorClicked"/>
+            </StackPanel>
+        </Border>
+
+        <!-- НИЖНЯЯ ЧАСТЬ: Статус и кнопки управления окном -->
+        <Border Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2"
+                Background="#F9F9F9" BorderBrush="#CCCCCC" BorderThickness="0,1,0,0"
+                Padding="15" Margin="5,0,5,5">
+            
+            <Grid ColumnDefinitions="*, Auto, Auto">
+                <!-- Статус бар слева -->
+                <TextBlock x:Name="StatusText" 
+                           Text="Статус: Ожидание действий пользователя" 
+                           Foreground="#555555" VerticalAlignment="Center"
+                           Margin="0,0,20,0"/>
+                
+                <!-- Кнопки справа -->
+                <Button x:Name="BtnOk" Grid.Column="1" Content="Готово" 
+                        Width="100" Margin="0,0,10,0" Classes="Accent"/>
+                <Button x:Name="BtnCancel" Grid.Column="2" Content="Отмена" 
+                        Width="100"/>
+            </Grid>
+        </Border>
+
+    </Grid>
+</Window>

@@ -41,6 +41,17 @@ public static class DbHelper
 
         using var cmd = new SqliteCommand(createTableSql, conn);
         cmd.ExecuteNonQuery();
+
+        const string createInspectorsTableSql = @"
+            CREATE TABLE IF NOT EXISTS Inspectors (
+                Id INTEGER PRIMARY KEY AUTOINCREMENT,
+                FirstName TEXT NOT NULL,
+                LastName TEXT NOT NULL,
+                MiddleName TEXT
+            );";
+
+        using var cmdInspectors = new SqliteCommand(createInspectorsTableSql, conn);
+        cmdInspectors.ExecuteNonQuery();
         
         Console.WriteLine("БД готова!");
     }
@@ -127,6 +138,63 @@ public static class DbHelper
         conn.Open();
 
         const string sql = "DELETE FROM Instruments WHERE Id = @Id";
+        using var cmd = new SqliteCommand(sql, conn);
+        cmd.Parameters.AddWithValue("@Id", id);
+
+        int rowsAffected = cmd.ExecuteNonQuery();
+        if (rowsAffected == 0)
+            throw new InvalidOperationException("Не удалось удалить: запись с таким Id не найдена.");
+    }
+
+    public static void SaveInspector(InspectorModel inspector)
+    {
+        using var conn = new SqliteConnection(ConnectionString);
+        conn.Open();
+
+        const string sql = @"
+        INSERT INTO Inspectors (FirstName, LastName, MiddleName)
+        VALUES (@FirstName, @LastName, @MiddleName);
+        ";
+
+        using var cmd = new SqliteCommand(sql, conn);
+        cmd.Parameters.AddWithValue("@FirstName", inspector.FirstName);
+        cmd.Parameters.AddWithValue("@LastName", inspector.LastName);
+        cmd.Parameters.AddWithValue("@MiddleName", (object?)inspector.MiddleName ?? DBNull.Value);
+        cmd.ExecuteNonQuery();
+
+    }
+
+    public static List<InspectorModel> GetAllInspectors()
+    {
+        var list = new List<InspectorModel>();
+        using var conn = new SqliteConnection(ConnectionString);
+        conn.Open();
+
+        const string sql = "SELECT * FROM Inspectors ORDER BY LastName, FirstName, MiddleName";
+        using var cmd = new SqliteCommand(sql, conn);
+        using var reader = cmd.ExecuteReader();
+
+        while (reader.Read())
+        {
+            list.Add(new InspectorModel
+            {
+                Id = reader.GetInt32(reader.GetOrdinal("Id")),
+                FirstName = reader.GetString(reader.GetOrdinal("FirstName")),
+                LastName = reader.GetString(reader.GetOrdinal("LastName")),
+                MiddleName = reader.IsDBNull(reader.GetOrdinal("MiddleName"))
+                    ? string.Empty
+                    : reader.GetString(reader.GetOrdinal("MiddleName"))
+            });
+        }
+        return list;
+    }
+
+    public static void DeleteInspector(int id)
+    {
+        using var conn = new SqliteConnection(ConnectionString);
+        conn.Open();
+
+        const string sql = "DELETE FROM Inspectors WHERE Id = @Id";
         using var cmd = new SqliteCommand(sql, conn);
         cmd.Parameters.AddWithValue("@Id", id);
 

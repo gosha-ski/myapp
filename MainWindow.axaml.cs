@@ -16,7 +16,13 @@ public partial class MainWindow : Window
     {
         Console.WriteLine("InstrumentListWindow OKEY");
         var dialog = new InstrumentListWindow();
-        dialog.ShowDialog(this);
-        
+        dialog.ShowDialog(this);   
+    }
+
+    public void MenuInspectorClicked(object? sender, RoutedEventArgs e)
+    {
+        Console.WriteLine("InspectorListWindow OKEY");
+        var dialog = new InspectorListWindow();
+        dialog.ShowDialog(this);   
     }
 }
