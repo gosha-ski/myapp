@@ -121,5 +121,20 @@ public static class DbHelper
         return list;
     }
 
+    public static void DeleteInstrument(int id)
+    {
+        using var conn = new SqliteConnection(ConnectionString);
+        conn.Open();
+
+        const string sql = "DELETE FROM Instruments WHERE Id = @Id";
+        using var cmd = new SqliteCommand(sql, conn);
+        cmd.Parameters.AddWithValue("@Id", id);
+
+        int rowsAffected = cmd.ExecuteNonQuery();
+        if (rowsAffected == 0)
+            throw new InvalidOperationException("Не удалось удалить: запись с таким Id не найдена.");
+    }
+
+
 
 }

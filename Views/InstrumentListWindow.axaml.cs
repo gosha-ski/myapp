@@ -44,4 +44,31 @@ public partial class InstrumentListWindow : Window
         dialog.ShowDialog(this);
     }
 
+    private void BtnDeleteInstrumentClicked(object? sender, RoutedEventArgs e)
+    {
+        // Получаем выделенный элемент в DataGrid
+        var selectedItem = InstrumentsGrid.SelectedItem as InstrumentModel;
+
+        if (selectedItem == null)
+        {
+            StatusText.Text = "Статус: Выберите прибор для удаления";
+            return;
+        }
+
+        try
+        {
+            DbHelper.DeleteInstrument(selectedItem.Id);
+            LoadInstruments(); // Перезагружаем список
+            StatusText.Text = $"Статус: Прибор '{selectedItem.Model}' удалён";
+            Console.WriteLine($"Удален прибор с Id={selectedItem.Id}");
+        }
+        catch (Exception ex)
+        {
+            StatusText.Text = "Статус: Ошибка при удалении прибора";
+            System.Console.WriteLine("Ошибка удаления: " + ex.Message);
+            // В реальном приложении лучше показывать отдельное окно ошибки
+        }
+    }
+
+
 }
