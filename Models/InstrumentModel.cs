@@ -1,5 +1,6 @@
 using System;
 
+
 namespace MyAvaloniaApp.Models;
 
     public class InstrumentModel

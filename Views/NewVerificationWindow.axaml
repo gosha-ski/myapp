@@ -1,0 +1,27 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        x:Class="MyAvaloniaApp.Views.NewVerificationWindow"
+        Title="Поверка средств измерений"
+        Width="1200" Height="800">
+
+    <Grid ColumnDefinitions="250,*" RowDefinitions="*, Auto">
+        <TreeView Grid.Column="0" x:Name="StepsTree" SelectionChanged="OnStepSelected">
+            <TreeView.ItemTemplate>
+                <TreeDataTemplate>
+                    <TextBlock Text="{Binding}" Margin="5"/>
+                </TreeDataTemplate>
+            </TreeView.ItemTemplate>
+        </TreeView>
+
+        <ContentControl Grid.Column="1" x:Name="StepContent"/>
+
+        <StackPanel Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
+                    Orientation="Horizontal" HorizontalAlignment="Right" Margin="10">
+            <Button Content="&lt; Назад" Click="OnPrevClick" Margin="5" x:Name="BtnPrev"/>
+            <Button Content="Вперед &gt;" Click="OnNextClick" Margin="5" x:Name="BtnNext"/>
+            <Button Content="Выход из поверки" HorizontalAlignment="Right" Margin="5"/>
+        </StackPanel>
+    </Grid>
+</Window>

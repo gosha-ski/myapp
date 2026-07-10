@@ -58,7 +58,7 @@
             <Border Grid.Column="1" BorderBrush="#CCCCCC" BorderThickness="1" Margin="4">
                 <StackPanel Margin="8" Spacing="6">
                     <TextBlock Text="Действия со списком" FontWeight="Bold" Margin="0,0,0,8"/>
-                    <Button Name="BtnNewVerification" Content="Начать новую поверку" Margin="0,2"/>
+                    <Button Name="BtnNewVerification" Content="Начать новую поверку" Margin="0,2" Click="BtnNewVerificationClicked"/>
                     <Button Name="BtnContinueVerification" Content="Продолжить поверку" Margin="0,2"/>
                     <Button Name="BtnFromTemplate" Content="На основе шаблона…" Margin="0,2"/>
                     <Button Name="BtnSearchVerification" Content="Поиск поверки" Margin="0,2"/>

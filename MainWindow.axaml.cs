@@ -33,5 +33,13 @@ public partial class MainWindow : Window
         dialog.ShowDialog(this);   
     }
 
+    
+    public void BtnNewVerificationClicked(object? sender, RoutedEventArgs e)
+    {
+        Console.WriteLine("TEMPLATE LIST");
+        var dialog = new NewVerificationWindow();
+        dialog.ShowDialog(this);   
+    }
+
 
 }

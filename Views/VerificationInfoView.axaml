@@ -1,0 +1,39 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="MyAvaloniaApp.Views.VerificationInfoView">
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="20" Spacing="15">
+            <TextBlock Text="Сведения о поверке" FontSize="18" FontWeight="Bold" Margin="0,0,0,20"/>
+            
+            <StackPanel Orientation="Horizontal" Spacing="15">
+                <TextBlock Text="Поверитель:" VerticalAlignment="Center"/>
+                <TextBox x:Name="TbSelectInspector" Width="200" Text="Петров Иван Иванович"/>
+                <Button Click="BtnAddInspectorInVerificationStepClicked">Добавить</Button>
+            </StackPanel>
+
+            <TextBlock Text="Условия поверки:" FontWeight="Bold" Margin="0,10,0,5"/>
+            
+            <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto,Auto" Margin="0,0,0,15">
+                <TextBlock Grid.Row="0" Grid.Column="0" Text="Температура:" VerticalAlignment="Center"/>
+                <TextBox Grid.Row="0" Grid.Column="1" Text="23.0" Width="100"/>
+                
+                <TextBlock Grid.Row="1" Grid.Column="0" Text="Влажность:" VerticalAlignment="Center"/>
+                <TextBox Grid.Row="1" Grid.Column="1" Text="50.0" Width="100"/>
+                
+                <TextBlock Grid.Row="2" Grid.Column="0" Text="Давление:" VerticalAlignment="Center"/>
+                <TextBox Grid.Row="2" Grid.Column="1" Text="760" Width="100"/>
+            </Grid>
+
+            <StackPanel Orientation="Horizontal" Spacing="15">
+                <TextBlock Text="Дата поверки:" VerticalAlignment="Center"/>
+                <DatePicker Width="150"/>
+            </StackPanel>
+
+            <TextBlock Text="Тип поверки:" FontWeight="Bold" Margin="0,10,0,5"/>
+            <StackPanel Orientation="Horizontal" Spacing="20">
+                <RadioButton Content="Автоматическая" IsChecked="True"/>
+                <RadioButton Content="Ручная"/>
+            </StackPanel>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

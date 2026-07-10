@@ -1,7 +1,7 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:models="clr-namespace:MyAvaloniaApp.Models"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        x:Class="MyAvaloniaApp.Views.InspectorListWindow"
+        x:Class="MyAvaloniaApp.Views.SelectInspectorListWindow"
         Title="Список доступных поверителей"
         Width="1000" Height="700">
 
@@ -27,8 +27,8 @@
                 
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="Фамилия" Binding="{Binding LastName}"  Width="*" />
-                    <DataGridTextColumn Header="Имя" Binding="{Binding FirstName}" Width="*" />
-                    <DataGridTextColumn Header="Отчество"  Binding="{Binding MiddleName}" Width="*" />
+                    <DataGridTextColumn Header="Имя" Binding="{Binding MiddleName}" Width="*" />
+                    <DataGridTextColumn Header="Отчество"  Binding="{Binding FirstName}" Width="*" />
                 </DataGrid.Columns>
             </DataGrid>
         </Border>
@@ -42,10 +42,7 @@
                 
                 <Button x:Name="BtnAdd" Content="Добавить поверителя" 
                         Classes="Accent" Margin="0" Click="BtnAddInspectorClicked"/>
-                <Button x:Name="BtnEdit" Content="Редактировать данные" 
-                        Margin="0"/>
-                <Button x:Name="BtnDelete" Content="Удалить поверителя" 
-                        Margin="0" Click="BtnDeleteInspectorClicked"/>
+                
             </StackPanel>
         </Border>
 
@@ -63,7 +60,7 @@
                 
                 <!-- Кнопки справа -->
                 <Button x:Name="BtnOk" Grid.Column="1" Content="Готово" 
-                        Width="100" Margin="0,0,10,0" Classes="Accent"/>
+                        Width="100" Margin="0,0,10,0" Classes="Accent" Click="BtnOkClicked"/>
                 <Button x:Name="BtnCancel" Grid.Column="2" Content="Отмена" 
                         Width="100"/>
             </Grid>
