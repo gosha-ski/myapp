@@ -1,25 +1,30 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:local="using:MyAvaloniaApp.Views"
+             xmlns:models="using:MyAvaloniaApp.Models"
              x:Class="MyAvaloniaApp.Views.DevicesView"
              x:DataType="local:DevicesView"
              >
-    <Grid RowDefinitions="*, Auto">
+    <Grid RowDefinitions="*, Auto" ColumnDefinitions="Auto, Auto, Auto">
         <!-- Таблица приборов -->
         <Border BorderBrush="#CCCCCC" BorderThickness="1" Padding="5">
-            <DataGrid ItemsSource="{Binding Devices}" AutoGenerateColumns="False">
+            <DataGrid
+                    x:Name="SelectedInstrumentsGrid"
+                    AutoGenerateColumns="False"
+                    x:DataType="models:InstrumentModel"  
+                    >
                 <DataGrid.Columns>
-                    <DataGridTextColumn Header="№ канала" Binding="{Binding ChannelNumber}" Width="100"/>
-                    <DataGridTextColumn Header="Наименование" Binding="{Binding Name}" Width="200"/>
+                    <DataGridTextColumn Header="№ канала" Binding="{Binding TypeCode}" Width="100"/>
+                    <DataGridTextColumn Header="Наименование" Binding="{Binding Model}" Width="200"/>
                     <DataGridTextColumn Header="Серийный №" Binding="{Binding SerialNumber}" Width="150"/>
                 </DataGrid.Columns>
             </DataGrid>
         </Border>
 
         <!-- Панель действий (справа, как на скриншоте) -->
-        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="10">
-            <Button Content="Добавить в список" Click="OnAddClick" Margin="0,0,5,0" Width="120"/>
-            <Button Content="Удалить из списка" Click="OnRemoveClick" Margin="0,0,5,0" Width="120"/>
+        <StackPanel Grid.Row="0" Grid.Column="2"  HorizontalAlignment="Right" Margin="10">
+            <Button x:Name="BtnAddInstrumentToList" Content="Добавить в список" Click="OnAddClick" Margin="0,0,5,0" Width="150"/>
+            <Button Content="Удалить из списка" Click="OnRemoveClick" Margin="0,0,5,0" Width="150"/>
             <Button Content="Установить № канала" Click="OnSetChannelClick" Width="150"/>
         </StackPanel>
     </Grid>

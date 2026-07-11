@@ -9,9 +9,11 @@ using MyAvaloniaApp.Models;
 
 namespace MyAvaloniaApp.Views;
 
-public partial class InstrumentListWindow : Window
+public partial class SelectInstrumentListWindow : Window
 {
-    public InstrumentListWindow()
+    public InstrumentModel? SelectedInstrument { get; private set; }
+
+    public SelectInstrumentListWindow()
     {
         InitializeComponent();
         LoadInstruments();
@@ -25,10 +27,10 @@ public partial class InstrumentListWindow : Window
             InstrumentsGrid.ItemsSource = instruments;
             Console.WriteLine("LoadInstruments");
             foreach (var inst in instruments)
-	        {
-	            // подставь реальные свойства твоего класса Instrument
-	            Console.WriteLine($"ID: {inst.Id}, Название: {inst.TypeCode}, Тип: {inst.Model}");
-	        }
+            {
+                // подставь реальные свойства твоего класса Instrument
+                Console.WriteLine($"ID: {inst.Id}, Название: {inst.TypeCode}, Тип: {inst.Model}");
+            }
         }
         catch (Exception ex)
         {
@@ -72,6 +74,17 @@ public partial class InstrumentListWindow : Window
             StatusText.Text = "Статус: Ошибка при удалении прибора";
             System.Console.WriteLine("Ошибка удаления: " + ex.Message);
             // В реальном приложении лучше показывать отдельное окно ошибки
+        }
+    }
+
+    private void BtnDoneClicked(object? sender, RoutedEventArgs e){
+        var selected = InstrumentsGrid.SelectedItem as InstrumentModel;
+        if (selected != null)
+        {
+            SelectedInstrument = selected;
+            Console.WriteLine($"BtnDoneClicked TypeCode:{selected.TypeCode}");
+            
+            this.Close();
         }
     }
 

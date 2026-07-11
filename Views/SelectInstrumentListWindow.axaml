@@ -1,0 +1,83 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:models="using:MyAvaloniaApp.Models"
+        mc:Ignorable="d" d:DesignWidth="1024" d:DesignHeight="768"
+        x:Class="MyAvaloniaApp.Views.SelectInstrumentListWindow"
+        Title="Список доступных поверяемых приборов" Width="1024" Height="768">
+
+    <Window.Styles>
+        <StyleInclude Source="avares://Avalonia.Controls.DataGrid/Themes/Simple.xaml"/>
+    </Window.Styles>
+
+    <Grid RowDefinitions="Auto, *, Auto, Auto, Auto" ColumnDefinitions="*, 240">
+        <!-- Заголовок окна -->
+        <Border Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"
+                Padding="8" Background="#F0F0F0" BorderBrush="#CCCCCC" BorderThickness="0,0,0,1">
+            <TextBlock Text="Список доступных поверяемых приборов"
+                       FontWeight="Bold" VerticalAlignment="Center"/>
+        </Border>
+
+        <!-- Таблица приборов (слева) -->
+        <Grid Grid.Row="1" Grid.Column="0" ColumnDefinitions="*" RowDefinitions="Auto, *">
+            <Border Grid.Row="0" Padding="4" Background="#F0F0F0" BorderBrush="#CCCCCC" BorderThickness="0,0,0,1">
+                <TextBlock Text="Общие сведения" FontWeight="Bold" VerticalAlignment="Center"/>
+            </Border>
+            <Border Grid.Row="1" BorderBrush="#CCCCCC" BorderThickness="1" Margin="4">
+                <DataGrid Name="InstrumentsGrid"
+                          AutoGenerateColumns="False"
+                          CanUserSortColumns="True"
+                          CanUserResizeColumns="True"
+                          HeadersVisibility="Column"
+                          GridLinesVisibility="Horizontal"
+                          x:DataType="models:InstrumentModel" 
+                          
+                          BorderThickness="0">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Тип устройства" Binding="{Binding TypeCode}" Width="*"/>
+                        <DataGridTextColumn Header="Наименование"  Binding="{Binding Model}" Width="*"/>
+                        <DataGridTextColumn Header="Серийный №"  Binding="{Binding SerialNumber}" Width="120"/>
+                        <DataGridTextColumn Header="Инвентарный №"  Binding="{Binding InventoryNumber}" Width="120"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </Border>
+        </Grid>
+
+        <!-- Панель действий (справа) -->
+        <Border Grid.Row="1" Grid.Column="1" BorderBrush="#CCCCCC" BorderThickness="1" Margin="4">
+            <StackPanel Margin="8" Spacing="6">
+                <TextBlock Text="Действия со списком" FontWeight="Bold" Margin="0,0,0,8"/>
+                <Button Name="BtnAddInstrument" Click="BtnAddInstrumentClicked" Content="Добавить прибор" Margin="0,2"/>
+               
+        
+                <Button Name="BtnDeleteInstrument" Click="BtnDeleteInstrumentClicked" Content="Удалить прибор" Margin="0,2"/>
+                <Button Name="BtnSearchInstrument" Content="Поиск прибора" Margin="0,2"/>
+            </StackPanel>
+        </Border>
+
+        <!-- Чекбоксы (нижняя панель) -->
+        <Grid Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2"
+              ColumnDefinitions="*, *" RowDefinitions="Auto, Auto" Margin="8,0,8,0">
+            <CheckBox Name="ChkShowAll" Content="Показать все общие сведения" Grid.Column="0" Grid.Row="0" Margin="0,2"/>
+            <CheckBox Name="ChkShowAccuracy" Content="Показать параметры класса точности" Grid.Column="1" Grid.Row="0" Margin="0,2"/>
+            <CheckBox Name="ChkShowSpecs" Content="Показать технические характеристики" Grid.Column="0" Grid.Row="1" Margin="0,2"/>
+            <CheckBox Name="ChkShowRange" Content="Показать параметры диапазона" Grid.Column="1" Grid.Row="1" Margin="0,2"/>
+        </Grid>
+
+        <!-- Кнопки "Готово" и "Отмена" -->
+        <Grid Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2"
+              ColumnDefinitions="*, Auto, Auto" Margin="8">
+            <Button Name="BtnDone" Click="BtnDoneClicked" Content="Готово" Grid.Column="1" Width="100" Margin="4,0"/>
+            <Button Name="BtnCancel" Content="Отмена" Grid.Column="2" Width="100" Margin="4,0"/>
+        </Grid>
+
+        <!-- Строка статуса -->
+        <Border Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2"
+                Background="#F5F5F5" BorderBrush="#CCCCCC" BorderThickness="1,0,1,1"
+                Padding="8">
+            <TextBlock Name="StatusText" Text="Статус: Ожидание действий пользователя"
+                       Foreground="#555555" VerticalAlignment="Center"/>
+        </Border>
+    </Grid>
+</Window>

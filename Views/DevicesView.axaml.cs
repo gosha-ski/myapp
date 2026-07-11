@@ -1,26 +1,35 @@
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using System.Collections.ObjectModel;
+using MyAvaloniaApp;
+using System.Threading.Tasks;
+using MyAvaloniaApp.Models;
+using System;
 
 namespace MyAvaloniaApp.Views
 {
     public partial class DevicesView : UserControl
     {
-        public ObservableCollection<Device> Devices { get; } = new();
+        public ObservableCollection<InstrumentModel> Devices { get; } = new();
+        private readonly Window _ownerWindow;
 
-        public DevicesView()
+        public DevicesView(Window ownerWindow)
         {
             InitializeComponent();
-            this.DataContext = this; // Привязываем данные к самому контролу
-
-            // Добавляем тестовые данные, как на скриншоте
-            Devices.Add(new Device { ChannelNumber = "---", Name = "метран 120", SerialNumber = "1234" });
-            Devices.Add(new Device { ChannelNumber = "---", Name = "метран 120", SerialNumber = "1234" });
+            //this.DataContext = this; 
+            _ownerWindow = ownerWindow;
         }
 
-        private void OnAddClick(object? sender, RoutedEventArgs e)
+        private async void OnAddClick(object? sender, RoutedEventArgs e)
         {
-            Devices.Add(new Device { ChannelNumber = "---", Name = "метран 120", SerialNumber = "1234" });
+            var dialog = new SelectInstrumentListWindow();
+            await dialog.ShowDialog(_ownerWindow);
+            if(dialog.SelectedInstrument!=null){
+                InstrumentModel instrument = dialog.SelectedInstrument;
+                //Console.WriteLine($"INSIDE OnAddClick TypeCode:{instrument.TypeCode}");
+                Devices.Add(instrument);
+                SelectedInstrumentsGrid.ItemsSource = Devices;
+            }
         }
 
         private void OnRemoveClick(object? sender, RoutedEventArgs e)
@@ -33,12 +42,9 @@ namespace MyAvaloniaApp.Views
         {
             // Логика установки номера канала (можно добавить диалог ввода)
         }
+
+        
+
     }
 
-    public class Device
-    {
-        public string? ChannelNumber { get; set; }
-        public string? Name { get; set; }
-        public string? SerialNumber { get; set; }
-    }
 }

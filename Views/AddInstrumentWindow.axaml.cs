@@ -11,7 +11,8 @@ namespace MyAvaloniaApp.Views;
     public partial class AddInstrumentWindow : Window
     {
      
-
+        public event Action? OnSaved;
+        
         public AddInstrumentWindow()
         {
             InitializeComponent();
@@ -85,6 +86,7 @@ namespace MyAvaloniaApp.Views;
             try
             {
                 DbHelper.SaveInstrument(instrument);
+                OnSaved?.Invoke();
                 this.Close();
             }
             catch (Exception ex)

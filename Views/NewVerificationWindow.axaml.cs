@@ -21,7 +21,7 @@ namespace MyAvaloniaApp.Views
         private void InitializeSteps()
         {
             _stepViews.Add(new VerificationInfoView(this)); 
-            _stepViews.Add(new DevicesView());
+            _stepViews.Add(new DevicesView(this));
 
             var stepNames = new List<string>
             {
