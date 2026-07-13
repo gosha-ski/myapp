@@ -10,6 +10,7 @@ namespace MyAvaloniaApp.Views;
 
 public partial class AddTemplateWindow : Window
 {
+	public event Action? OnSaved;
 	private readonly Dictionary<string, List<string>> _rangesByDeviceType = new()
     {
         { "Внешний контроллер", new List<string> { "Давление" } },
@@ -24,7 +25,7 @@ public partial class AddTemplateWindow : Window
 
     private ComboBox? _cbDeviceType;
     private ComboBox? _cbRange;
-     private ComboBox? _cbUnit;
+    private ComboBox? _cbUnit;
 
 	public AddTemplateWindow()
 	{
@@ -53,7 +54,45 @@ public partial class AddTemplateWindow : Window
 	    _cbDeviceType.SelectedIndex = -1;
 	}
 
-	private void OnDeviceTypeChanged(object? sender, SelectionChangedEventArgs? e)
+	private void BtnOkClicked(object? sender, RoutedEventArgs e)
+	{
+		string deviceType = cbDeviceType?.Text?.Trim() ?? "";
+        string fullName = tbFullName?.Text?.Trim() ?? "";
+        string serialNumber = tbSerialNumber?.Text?.Trim() ?? "";
+        double inaccuracy = Convert.ToDouble(tbInaccuracy?.Text?.Trim() ?? "0");
+		string currentRange = cbRange?.Text?.Trim() ?? "";
+		string units = "МПа";
+		double lowerLimit = Convert.ToDouble(tbLowerLimit?.Text);
+        double upperLimit = Convert.ToDouble(tbUpperLimit?.Text);
+
+
+		TemplateModel template = new TemplateModel
+		{
+            DeviceType = deviceType,
+			FullName = fullName,
+			SerialNumber = serialNumber,
+			Inaccuracy = inaccuracy,
+			InaccuracyMethodCode = 0, //потом надо поправить
+			CurrentRange = currentRange,
+			Units = units,
+			LowerLimit = lowerLimit,
+			UpperLimit = upperLimit
+		};
+
+		DbHelper.SaveTemplate(template);
+
+        OnSaved?.Invoke();
+        this.Close();
+
+
+        //Console.WriteLine($"{deviceType} {fullName} {inaccuracy} {serialNumber}");
+        
+
+
+    }
+
+
+    private void OnDeviceTypeChanged(object? sender, SelectionChangedEventArgs? e)
 	{
 	    // Если ничего не выбрано (SelectedIndex == -1), выходим
 	    if (_cbDeviceType?.SelectedItem is not DeviceTypeModel device) 

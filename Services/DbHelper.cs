@@ -52,11 +52,115 @@ public static class DbHelper
 
         using var cmdInspectors = new SqliteCommand(createInspectorsTableSql, conn);
         cmdInspectors.ExecuteNonQuery();
-        
+
+        const string createTemplateTableSql = @"
+            CREATE TABLE IF NOT EXISTS Templates (
+                Id INTEGER PRIMARY KEY AUTOINCREMENT,
+                DeviceType TEXT,
+                FullName TEXT,
+                SerialNumber TEXT,
+                Inaccuracy REAL,
+                InaccuracyMethodCode INTEGER NOT NULL DEFAULT 0,
+                CurrentRange TEXT,
+
+
+                -- ИЗМЕНЕНИЕ: Units теперь INTEGER (код из Enum)
+                Units INTEGER NOT NULL DEFAULT 0, 
+                
+                LowerLimit REAL,
+                UpperLimit REAL
+            );";
+
+        using var cmdTemplate = new SqliteCommand(createTemplateTableSql, conn);
+        cmdTemplate.ExecuteNonQuery();
+
         Console.WriteLine("БД готова!");
     }
 
     public static void Initialize() { /* Пустой метод, нужен только чтобы вызвать статический конструктор */ }
+
+    public static void SaveTemplate(TemplateModel template)
+    {
+        using var conn = new SqliteConnection(ConnectionString);
+        conn.Open();
+        
+        const string sql = @"
+                INSERT INTO Templates (
+                    DeviceType, FullName, SerialNumber, Inaccuracy, InaccuracyMethodCode, CurrentRange, Units, LowerLimit, UpperLimit 
+                    ) VALUES (
+                    @DeviceType, @FullName, @SerialNumber, @Inaccuracy,  @InaccuracyMethodCode, @CurrentRange, @Units, @LowerLimit, @UpperLimit
+                    );";
+
+        using var cmd = new SqliteCommand(sql, conn);
+
+        cmd.Parameters.AddWithValue("@DeviceType", (object?)template.DeviceType ?? DBNull.Value);
+        cmd.Parameters.AddWithValue("@FullName", (object?)template.FullName ?? DBNull.Value);
+        cmd.Parameters.AddWithValue("@SerialNumber", (object?)template.SerialNumber ?? DBNull.Value);
+        cmd.Parameters.AddWithValue("@Inaccuracy", (object?)template.Inaccuracy ?? DBNull.Value);
+        cmd.Parameters.AddWithValue("@InaccuracyMethodCode", (object?)template.InaccuracyMethodCode ?? DBNull.Value);
+        cmd.Parameters.AddWithValue("@CurrentRange", (object?)template.CurrentRange ?? DBNull.Value);
+        cmd.Parameters.AddWithValue("@Units", (object?)template.Units ?? DBNull.Value);
+        cmd.Parameters.AddWithValue("@LowerLimit", (object?)template.LowerLimit ?? DBNull.Value);
+        cmd.Parameters.AddWithValue("@UpperLimit", (object?)template.UpperLimit ?? DBNull.Value);
+
+        cmd.ExecuteNonQuery();
+
+    }
+
+    public static List<TemplateModel> GetAllTemplates()
+    {
+        var list = new List<TemplateModel>();
+        using var conn = new SqliteConnection(ConnectionString);
+        conn.Open();
+
+        const string sql = "SELECT * FROM Templates ORDER BY Id DESC";
+        using var cmd = new SqliteCommand(sql, conn);
+        using var reader = cmd.ExecuteReader();
+
+        while (reader.Read())
+        {
+            list.Add(new TemplateModel
+            {
+                Id = reader.GetInt32(reader.GetOrdinal("Id")),
+                DeviceType = reader.IsDBNull(reader.GetOrdinal("DeviceType"))
+                    ? null
+                    : reader.GetString(reader.GetOrdinal("DeviceType")),
+
+                FullName = reader.IsDBNull(reader.GetOrdinal("FullName"))
+                    ? null
+                    : reader.GetString(reader.GetOrdinal("FullName")),
+
+                SerialNumber = reader.IsDBNull(reader.GetOrdinal("SerialNumber"))
+                    ? null
+                    : reader.GetString(reader.GetOrdinal("SerialNumber")),
+
+                Inaccuracy = reader.IsDBNull(reader.GetOrdinal("Inaccuracy"))
+                    ? (double?)null
+                    : reader.GetDouble(reader.GetOrdinal("Inaccuracy")),
+
+                InaccuracyMethodCode = reader.GetInt32(reader.GetOrdinal("InaccuracyMethodCode")),
+
+                CurrentRange = reader.IsDBNull(reader.GetOrdinal("CurrentRange"))
+                    ? null
+                    : reader.GetString(reader.GetOrdinal("CurrentRange")),
+
+                Units = reader.IsDBNull(reader.GetOrdinal("Units"))
+                    ? null
+                    : reader.GetString(reader.GetOrdinal("Units")),
+
+                LowerLimit = reader.IsDBNull(reader.GetOrdinal("LowerLimit"))
+                    ? (double?)null
+                    : reader.GetDouble(reader.GetOrdinal("LowerLimit")),
+
+                UpperLimit = reader.IsDBNull(reader.GetOrdinal("UpperLimit"))
+                    ? (double?)null
+                    : reader.GetDouble(reader.GetOrdinal("UpperLimit"))
+            });
+        }
+
+        return list;
+    }
+
 
     public static void SaveInstrument(InstrumentModel instrument)
         {

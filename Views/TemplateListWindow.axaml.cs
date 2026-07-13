@@ -14,12 +14,24 @@ public partial class TemplateListWindow : Window
     public TemplateListWindow()
     {
         InitializeComponent();
+        LoadTemplates();
     }
 
     public void BtnAddTemplateClicked(object? sender, RoutedEventArgs e)
     {
         Console.WriteLine("BtnAddInstrumentClicked");
         var dialog = new AddTemplateWindow();
+        dialog.OnSaved += () =>
+        {
+            System.Console.WriteLine("Данные сохранены, обновляем список...");
+            LoadTemplates();
+        };
         dialog.ShowDialog(this);
+    }
+
+    public void LoadTemplates()
+    {
+        List<TemplateModel> templates = DbHelper.GetAllTemplates();
+        TemplateDataGrid.ItemsSource = templates;
     }
 }

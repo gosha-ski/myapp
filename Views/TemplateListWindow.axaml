@@ -20,19 +20,22 @@
                   AutoGenerateColumns="False"
                   CanUserResizeColumns="True"
                   CanUserSortColumns="True"
-                  Margin="10,0,5,0">
+                  Margin="10,0,5,0"
+				  x:DataType="models:TemplateModel"
+				  x:Name="TemplateDataGrid"
+				  >
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Наименование"
-                                    
+                                    Binding="{Binding FullName}"
                                     Width="*"/>
                 <DataGridTextColumn Header="Серийный номер"
-                                    
+                                    Binding="{Binding SerialNumber}"
                                     Width="150"/>
                 <DataGridTextColumn Header="Погрешность"
-                                    
+                                    Binding="{Binding Inaccuracy}"
                                     Width="120"/>
                 <DataGridTextColumn Header="Рабочий диапазон"
-                                    
+                                    Binding="{Binding CurrentRange}"
                                     Width="*"/>
             </DataGrid.Columns>
         </DataGrid>
