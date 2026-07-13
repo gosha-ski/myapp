@@ -11,10 +11,8 @@
         <!-- Тип устройства (ComboBox) -->
         <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,12" Spacing="8">
             <TextBlock Text="Тип устройства:" VerticalAlignment="Center" Width="120"/>
-            <ComboBox Width="300" SelectedIndex="0">
-                <ComboBoxItem>Эталон давления</ComboBoxItem>
-                <ComboBoxItem>Эталон тока</ComboBoxItem>
-                <ComboBoxItem>Эталон температуры</ComboBoxItem>
+            <ComboBox x:Name="cbDeviceType" Width="300" SelectedIndex="0">
+                
             </ComboBox>
         </StackPanel>
 
@@ -49,10 +47,8 @@
         <GroupBox Grid.Row="3" Header="Настройка рабочего диапазона" Margin="0,0,0,12">
             <Grid ColumnDefinitions="*,*" RowDefinitions="Auto">
                 <TextBlock Grid.Row="0" Grid.Column="0" Text="Текущий диапазон:" Margin="6,4,6,4"/>
-                <ComboBox Grid.Row="0" Grid.Column="1" Width="200" Margin="6,4,6,4">
-                    <ComboBoxItem>Диапазон 1</ComboBoxItem>
-                    <ComboBoxItem>Диапазон 2</ComboBoxItem>
-                    <ComboBoxItem>Диапазон 3</ComboBoxItem>
+                <ComboBox x:Name="cbRange" Grid.Row="0" Grid.Column="1" Width="200" Margin="6,4,6,4">
+                    
                 </ComboBox>
             </Grid>
         </GroupBox>
