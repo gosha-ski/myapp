@@ -1,0 +1,67 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="MyAvaloniaApp.Views.InputTemplateView">
+
+    <Grid ColumnDefinitions="*,200" RowDefinitions="Auto,Auto,Auto,Auto">
+        <StackPanel Grid.Column="0" Margin="10">
+            <!-- Основные сведения о шаблоне -->
+            <GroupBox Header="Основные сведения о шаблоне" Margin="0,0,0,10">
+                <StackPanel Margin="10">
+                    <Grid ColumnDefinitions="150,*" Margin="0,5">
+                        <TextBlock Grid.Column="0" Text="Тип устройства:" VerticalAlignment="Center"/>
+                        <TextBox Grid.Column="1" x:Name="DeviceTypeBox" Margin="5,0"/>
+                    </Grid>
+                    <Grid ColumnDefinitions="150,*" Margin="0,5">
+                        <TextBlock Grid.Column="0" Text="Наименование шаблона:" VerticalAlignment="Center"/>
+                        <TextBox Grid.Column="1" x:Name="EtalonNameBox" Margin="5,0"/> <!-- Можно переименовать в TemplateNameBox -->
+                    </Grid>
+                    <Grid ColumnDefinitions="150,*" Margin="0,5">
+                        <TextBlock Grid.Column="0" Text="Серийный номер:" VerticalAlignment="Center"/>
+                        <TextBox Grid.Column="1" x:Name="SerialNumberBox" Margin="5,0"/>
+                    </Grid>
+                </StackPanel>
+            </GroupBox>
+
+            <!-- Погрешность измерений шаблона -->
+            <GroupBox Header="Погрешность измерений шаблона" Margin="0,0,0,10">
+                <StackPanel Margin="10">
+                    <Grid ColumnDefinitions="150,*" Margin="0,5">
+                        <TextBlock Grid.Column="0" Text="Погрешность измерений:" VerticalAlignment="Center"/>
+                        <TextBox Grid.Column="1" x:Name="MeasurementErrorBox" Margin="5,0"/>
+                    </Grid>
+                    <Grid ColumnDefinitions="150,*" Margin="0,5">
+                        <TextBlock Grid.Column="0" Text="Нормировка погрешности:" VerticalAlignment="Center"/>
+                        <TextBox Grid.Column="1" x:Name="ErrorNormalizationBox" Margin="5,0"/>
+                    </Grid>
+                </StackPanel>
+            </GroupBox>
+
+            <!-- Параметры рабочего диапазона шаблона -->
+            <GroupBox Header="Параметры рабочего диапазона шаблона" Margin="0,0,0,10">
+                <StackPanel Margin="10">
+                    <Grid ColumnDefinitions="150,*" Margin="0,5">
+                        <TextBlock Grid.Column="0" Text="Текущий диапазон:" VerticalAlignment="Center"/>
+                        <TextBox Grid.Column="1" x:Name="CurrentRangeBox" Margin="5,0"/>
+                    </Grid>
+                    <Grid ColumnDefinitions="150,*,100,*" Margin="0,5">
+                        <TextBlock Grid.Column="0" Text="Единицы измерения:" VerticalAlignment="Center"/>
+                        <TextBox Grid.Column="1" x:Name="UnitsBox" Margin="5,0"/>
+                        <TextBlock Grid.Column="2" Text="НПИ:" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+                        <TextBox Grid.Column="3" x:Name="NpiBox" Margin="5,0"/>
+                    </Grid>
+                    <Grid ColumnDefinitions="150,*,100,*" Margin="0,5">
+                        <TextBlock Grid.Column="2" Text="ВПИ:" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+                        <TextBox Grid.Column="3" x:Name="VpiBox" Margin="5,0"/>
+                    </Grid>
+                </StackPanel>
+            </GroupBox>
+        </StackPanel>
+
+        <!-- Панель действий -->
+        <StackPanel Grid.Column="1" Margin="10" VerticalAlignment="Top">
+            <!-- Кнопка теперь предлагает выбрать шаблон -->
+            <Button Content="Выбрать шаблон" Click="SelectTemplateClicked" Margin="0,0,0,10"/>
+            <Button Content="Подготовить шаблон" />
+        </StackPanel>
+    </Grid>
+</UserControl>

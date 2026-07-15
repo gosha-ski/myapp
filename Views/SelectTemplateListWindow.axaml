@@ -1,0 +1,92 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:models="using:MyAvaloniaApp.Models"
+        mc:Ignorable="d" d:DesignWidth="1024" d:DesignHeight="768"
+        x:Class="MyAvaloniaApp.Views.SelectTemplateListWindow"
+        Title="Список доступных поверяемых приборов" Width="1024" Height="768" 
+        >
+
+    <Grid ColumnDefinitions="*,200" RowDefinitions="Auto,*,Auto,Auto,Auto">
+        <!-- Заголовок окна -->
+        <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"
+                   Text="Список доступных эталонов"
+                   Margin="10,10,0,10"
+                   FontSize="16" FontWeight="Bold"/>
+
+        <!-- Таблица (DataGrid) с жёстко заданными строками -->
+        <DataGrid Grid.Row="1" Grid.Column="0"
+                  AutoGenerateColumns="False"
+                  CanUserResizeColumns="True"
+                  CanUserSortColumns="True"
+                  Margin="10,0,5,0"
+				  x:DataType="models:TemplateModel"
+				  x:Name="TemplateDataGrid"
+				  >
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Наименование"
+                                    Binding="{Binding FullName}"
+                                    Width="*"/>
+                <DataGridTextColumn Header="Серийный номер"
+                                    Binding="{Binding SerialNumber}"
+                                    Width="150"/>
+                <DataGridTextColumn Header="Погрешность"
+                                    Binding="{Binding Inaccuracy}"
+                                    Width="120"/>
+                <DataGridTextColumn Header="Рабочий диапазон"
+                                    Binding="{Binding CurrentRange}"
+                                    Width="*"/>
+            </DataGrid.Columns>
+        </DataGrid>
+
+        <!-- Панель действий справа -->
+        <StackPanel Grid.Row="1" Grid.Column="1"
+                    Margin="5,0,10,0"
+                    Spacing="8">
+            <TextBlock Text="Действия со списком"
+                       FontWeight="Bold"
+                       Margin="0,0,0,8"/>
+            <Button Content="Добавить эталон"
+                    Margin="0,2" Click="BtnAddTemplateClicked"/>
+            <Button Content="Редактировать эталон"
+                    Margin="0,2"/>
+            <Button Content="Удалить эталон"
+                    Margin="0,2"/>
+        </StackPanel>
+
+        <!-- Панель чекбоксов внизу слева -->
+        <StackPanel Grid.Row="2" Grid.Column="0"
+                    Margin="10,5,0,5"
+                    Orientation="Horizontal"
+                    Spacing="15">
+            <CheckBox Content="Показать характеристику типа эталона"
+                      VerticalAlignment="Center"/>
+            <CheckBox Content="Показать характеристику погрешности изм."
+                      VerticalAlignment="Center"/>
+            <CheckBox Content="Показать характеристику рабочего диапазона"
+                      VerticalAlignment="Center"/>
+        </StackPanel>
+
+        <!-- Кнопки «Готово» и «Отмена» -->
+        <StackPanel Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2"
+                    Margin="10,5"
+                    HorizontalAlignment="Right"
+                    Orientation="Horizontal"
+                    Spacing="10">
+            <Button Content="Готово"
+                    Width="100"
+                    Click="BtnSelectTemplateClicked"
+                    />
+            <Button Content="Отмена"
+                    Width="100"/>
+        </StackPanel>
+
+        <!-- Статусная строка -->
+        <TextBlock Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2"
+                   Text="Статус:"
+                   Margin="10,5,0,0"
+                   FontSize="12" Foreground="#555"/>
+    </Grid>
+
+</Window>

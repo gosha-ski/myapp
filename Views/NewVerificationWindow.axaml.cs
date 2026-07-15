@@ -22,11 +22,15 @@ namespace MyAvaloniaApp.Views
         {
             _stepViews.Add(new VerificationInfoView(this)); 
             _stepViews.Add(new DevicesView(this));
+            _stepViews.Add(new InputTemplateView(this));
+            _stepViews.Add(new OuterTemplateView(this));
 
             var stepNames = new List<string>
             {
                 "Сведения о поверке",
-                "Поверяемые приборы"
+                "Поверяемые приборы",
+                "Входной эталон",
+                "Выходной эталон"
             };
 
             StepsTree.ItemsSource = stepNames;
