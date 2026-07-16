@@ -1,0 +1,36 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="MyAvaloniaApp.Views.AddPointsDialog"
+        Title="Добавление точек"
+        Width="300" Height="220"
+        CanResize="False">
+    
+    <Border Padding="15" Background="#F0F0F0">
+        <StackPanel Spacing="10">
+            <!-- Заголовок группы (опционально, можно убрать, если хочешь просто поля) -->
+            <TextBlock Text="Параметры ряда:" FontWeight="Bold" Margin="0,0,0,10"/>
+
+            <!-- Сетка для выравнивания подписей и полей -->
+            <Grid ColumnDefinitions="*,2*" RowDefinitions="Auto,Auto,Auto" RowSpacing="8">
+                
+                <!-- Первая точка -->
+                <TextBlock Grid.Row="0" Grid.Column="0" Text="Первая точка, МПа:" VerticalAlignment="Center"/>
+                <TextBox Grid.Row="0" Grid.Column="1" x:Name="FirstPointInput" Watermark="0.0"/>
+
+                <!-- Последняя точка -->
+                <TextBlock Grid.Row="1" Grid.Column="0" Text="Последняя точка, МПа:" VerticalAlignment="Center"/>
+                <TextBox Grid.Row="1" Grid.Column="1" x:Name="LastPointInput" Watermark="10.0"/>
+
+                <!-- Количество точек -->
+                <TextBlock Grid.Row="2" Grid.Column="0" Text="Количество точек:" VerticalAlignment="Center"/>
+                <NumericUpDown Grid.Row="2" Grid.Column="1" x:Name="CountInput" Minimum="2" Maximum="100" Value="5"/>
+            </Grid>
+
+            <!-- Панель кнопок -->
+            <StackPanel Orientation="Horizontal" Spacing="10" HorizontalAlignment="Right" Margin="0,20,0,0">
+                <Button Content="OK" x:Name="BtnOk" Width="80" Classes="Accent"/>
+                <Button Content="Отмена" x:Name="BtnCancel" Width="80"/>
+            </StackPanel>
+        </StackPanel>
+    </Border>
+</Window>

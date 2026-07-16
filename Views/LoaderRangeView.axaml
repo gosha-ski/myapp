@@ -1,0 +1,57 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="MyAvaloniaApp.Views.LoaderRangeView"
+             xmlns:models="using:MyAvaloniaApp.Models"
+             >
+    <Grid ColumnDefinitions="*,200" RowDefinitions="Auto,*,Auto">
+        <!-- Левая часть: таблица и настройки -->
+        <Border Grid.Column="0" Grid.Row="0" Grid.RowSpan="3"
+                BorderBrush="#CCCCCC" BorderThickness="1" Padding="5">
+            <StackPanel Spacing="5">
+                <TextBlock Text="Ряд нагружения (прямой ход)" FontWeight="Bold" Margin="0,0,0,5"/>
+                
+                <!-- DataGrid для точек -->
+                <DataGrid x:Name="PointsGrid"
+                          AutoGenerateColumns="False"
+                          x:DataType="models:LoadingPointModel" 
+                          SelectionMode="Single">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Binding="{Binding Index}"  Header="№ точки" IsReadOnly="True" Width="60"/>
+                        <DataGridTextColumn Binding="{Binding Value}" Header="Значение точки, МПа" Width="*"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+
+                <!-- Чекбокс обратного хода -->
+                <CheckBox x:Name="ReversePathCheck" Content="Включить обратный ход в процесс" Margin="0,10,0,5"/>
+
+                <!-- Настройка формата -->
+                <Border Background="#F5F5F5" Padding="5" CornerRadius="3">
+                    <StackPanel>
+                        <TextBlock Text="Формат представления точек ряда нагружения" FontWeight="Bold" FontSize="12"/>
+                        <StackPanel Orientation="Horizontal" Spacing="5" Margin="0,5,0,0">
+                            <TextBlock Text="Количество знаков после дес. разделителя:" VerticalAlignment="Center"/>
+                            <NumericUpDown x:Name="DecimalPlacesInput" Minimum="0" Maximum="10" Width="60"/>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+        </Border>
+
+        <!-- Правая часть: действия со списком -->
+        <Border Grid.Column="1" Grid.Row="0" Grid.RowSpan="3"
+                BorderBrush="#CCCCCC" BorderThickness="1" Padding="5">
+            <StackPanel Spacing="5">
+                <TextBlock Text="Действия со списком" FontWeight="Bold" Margin="0,0,0,5"/>
+                <Button x:Name="BtnMetro" Content="Метрологический ряд" Margin="0,0,0,2"/>
+                <Button x:Name="BtnAdd" Content="Добавить точки..." Margin="0,0,0,2"/>
+                <Button x:Name="BtnDelete" Content="Удалить точку" Margin="0,0,0,2"/>
+                <Separator Margin="0,5,0,5"/>
+                <Button x:Name="BtnMoveUp" Content="Переместить точку вверх" Margin="0,0,0,2"/>
+                <Button x:Name="BtnMoveDown" Content="Переместить точку вниз" Margin="0,0,0,2"/>
+                <Separator Margin="0,5,0,5"/>
+                <Button x:Name="BtnLoad" Content="Загрузить шаблон" Margin="0,0,0,2"/>
+                <Button x:Name="BtnSave" Content="Сохранить как шаблон" Margin="0,0,0,2"/>
+            </StackPanel>
+        </Border>
+    </Grid>
+</UserControl>

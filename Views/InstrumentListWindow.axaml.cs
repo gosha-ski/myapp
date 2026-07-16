@@ -23,11 +23,11 @@ public partial class InstrumentListWindow : Window
         {
             var instruments = DbHelper.GetAllInstruments(); // сделаем этот метод ниже
             InstrumentsGrid.ItemsSource = instruments;
-            Console.WriteLine("LoadInstruments");
+            //Console.WriteLine("LoadInstruments");
             foreach (var inst in instruments)
 	        {
 	            // подставь реальные свойства твоего класса Instrument
-	            Console.WriteLine($"ID: {inst.Id}, Название: {inst.TypeCode}, Тип: {inst.Model}");
+	            //Console.WriteLine($"ID: {inst.Id}, Название: {inst.TypeCode}, Тип: {inst.Model}");
 	        }
         }
         catch (Exception ex)
@@ -73,6 +73,35 @@ public partial class InstrumentListWindow : Window
             System.Console.WriteLine("Ошибка удаления: " + ex.Message);
             // В реальном приложении лучше показывать отдельное окно ошибки
         }
+    }
+
+    private void BtnDuplicateInstrumentClicked(object? sender, RoutedEventArgs e)
+    {
+        var selectedItem = InstrumentsGrid.SelectedItem as InstrumentModel;
+
+        if (selectedItem == null)
+        {
+            StatusText.Text = "Статус: Выберите прибор для удаления";
+            return;
+        }
+        Console.WriteLine($"INSTRUMENTId:{selectedItem.Id}");
+        InstrumentModel? instrument = DbHelper.GetInstrumentById(selectedItem.Id);
+        if(instrument == null){
+            return;
+        }
+        var dialog = new DuplicateInstrumentWindow();
+
+        dialog.OnSaved += () =>
+        {
+            Console.WriteLine($"{dialog.SerialNumber} {dialog.InventoryNumber}");
+            instrument.SerialNumber = dialog.SerialNumber;
+            instrument.InventoryNumber = dialog.InventoryNumber;
+            DbHelper.SaveInstrument(instrument);
+            LoadInstruments();
+        };
+
+        dialog.ShowDialog(this);
+
     }
 
 

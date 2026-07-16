@@ -161,6 +161,44 @@ public static class DbHelper
         return list;
     }
 
+    public static InstrumentModel? GetInstrumentById(int id)
+    {
+        const string sql = "SELECT * FROM instruments WHERE Id = @Id";
+
+        using var connection = new SqliteConnection(ConnectionString);
+        connection.Open();
+
+        using var command = new SqliteCommand(sql, connection);      // сразу передаём SQL и соединение
+        command.Parameters.AddWithValue("@Id", id);                 // или command.Parameters.Add("@Id", SqliteType.Integer).Value = id;
+
+        using var reader = command.ExecuteReader();
+        if (!reader.Read())
+            return null;
+
+        return new InstrumentModel
+            {
+                Id = reader.GetInt32(reader.GetOrdinal("Id")),
+                TypeCode = reader.GetInt32(reader.GetOrdinal("TypeCode")),
+                Model = reader.IsDBNull(reader.GetOrdinal("Model")) ? null : reader.GetString(reader.GetOrdinal("Model")),
+                SerialNumber = reader.IsDBNull(reader.GetOrdinal("SerialNumber")) ? null : reader.GetString(reader.GetOrdinal("SerialNumber")),
+                InventoryNumber = reader.IsDBNull(reader.GetOrdinal("InventoryNumber")) ? null : reader.GetString(reader.GetOrdinal("InventoryNumber")),
+                IntervalYears = reader.IsDBNull(reader.GetOrdinal("IntervalYears")) ? (int?)null : reader.GetInt32(reader.GetOrdinal("IntervalYears")),
+                Location = reader.IsDBNull(reader.GetOrdinal("Location")) ? null : reader.GetString(reader.GetOrdinal("Location")),
+                
+                // Важно: SQLite хранит дату как строку "yyyy-MM-dd", ParseExact превратит её обратно в DateTime
+                InServiceDate = reader.IsDBNull(reader.GetOrdinal("InServiceDate")) 
+                    ? DateTime.Today 
+                    : DateTime.ParseExact(reader.GetString(reader.GetOrdinal("InServiceDate")), "yyyy-MM-dd", null),
+
+                Units = reader.IsDBNull(reader.GetOrdinal("Units")) ? null : reader.GetString(reader.GetOrdinal("Units")),
+                LowerLimit = reader.IsDBNull(reader.GetOrdinal("LowerLimit")) ? (double?)null : reader.GetDouble(reader.GetOrdinal("LowerLimit")),
+                UpperLimit = reader.IsDBNull(reader.GetOrdinal("UpperLimit")) ? (double?)null : reader.GetDouble(reader.GetOrdinal("UpperLimit")),
+                AccuracyClass = reader.IsDBNull(reader.GetOrdinal("AccuracyClass")) ? (double?)null : reader.GetDouble(reader.GetOrdinal("AccuracyClass")),
+                VariationLimit = reader.IsDBNull(reader.GetOrdinal("VariationLimit")) ? (double?)null : reader.GetDouble(reader.GetOrdinal("VariationLimit")),
+                AccuracyMethodCode = reader.GetInt32(reader.GetOrdinal("AccuracyMethodCode"))
+            };
+    }
+
 
     public static void SaveInstrument(InstrumentModel instrument)
         {
