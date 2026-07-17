@@ -42,11 +42,14 @@ namespace MyAvaloniaApp.Views
             }
         }
 
+       
+
         private void OnRemoveClick(object? sender, RoutedEventArgs e)
         {
             if (Devices.Count > 0)
                 Devices.RemoveAt(Devices.Count - 1);
             //DbHelper.RemoveInstrumentFromVerification(_ownerWindow.VerificationId, )
+            Console.WriteLine("1234");
         }
 
         private void OnSetChannelClick(object? sender, RoutedEventArgs e)
