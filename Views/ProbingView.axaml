@@ -1,0 +1,56 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:MyAvaloniaApp.ViewModels"
+             xmlns:models="using:MyAvaloniaApp.Models"
+             x:Class="MyAvaloniaApp.Views.ProbingView"
+             Padding="10">
+
+    <Grid ColumnDefinitions="*, 200" RowDefinitions="Auto, *, Auto">
+        
+        <!-- Заголовок группы -->
+        <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" 
+                   Text="Результаты опробования работоспособности" 
+                   FontWeight="Bold" Margin="0,0,0,10"/>
+
+        <!-- Основная область: Таблица слева + Действия справа -->
+        <Grid Grid.Row="1" ColumnDefinitions="*, 200">
+            
+            <!-- Таблица результатов -->
+            <DataGrid Name="ResultsGrid" 
+                      AutoGenerateColumns="False"
+                      CanUserResizeColumns="True"
+                      CanUserSortColumns="True"
+                      x:DataType="models:InstrumentResultModel" 
+                      >
+                
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Канал" Binding="{Binding Channel}" Width="60" IsReadOnly="True"/>
+                    <DataGridTextColumn Header="Прибор" Binding="{Binding InstrumentName}" Width="150" IsReadOnly="True"/>
+                    <DataGridTextColumn Header="Серийный №" Binding="{Binding SerialNumber}" Width="120" IsReadOnly="True"/>
+                    
+                    <DataGridCheckBoxColumn Header="Осмотр" Binding="{Binding IsInspected}" Width="70" IsReadOnly="True"/>
+                    <DataGridCheckBoxColumn Header="Работосп-ть" Binding="{Binding IsFunctional}" Width="90" IsReadOnly="True"/>
+                    <DataGridCheckBoxColumn Header="Ноль" Binding="{Binding IsZeroOk}" Width="60" IsReadOnly="True"/>
+                    <DataGridCheckBoxColumn Header="Герметичнос" Binding="{Binding IsSealed}" Width="100" IsReadOnly="True"/>
+                </DataGrid.Columns>
+            </DataGrid>
+
+            <!-- Панель действий справа -->
+            <StackPanel Grid.Column="1" VerticalAlignment="Top" Margin="10,0,0,0">
+                <TextBlock Text="Действия со списком" FontWeight="Bold" Margin="0,0,0,10"/>
+                <Button Content="Опробация" 
+                        Name="BtnRunProbing" 
+                        Margin="0,0,0,20"
+                        HorizontalAlignment="Stretch"/>
+            </StackPanel>
+        </Grid>
+
+        <!-- Нижняя панель: Фильтр -->
+        <StackPanel Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" 
+                    Orientation="Horizontal" Margin="0,10,0,0">
+            <CheckBox Name="ChkShowReasons" Content="Показать причины несоответствия"/>
+            <!-- Сюда можно добавить другие фильтры или статус-бар -->
+        </StackPanel>
+
+    </Grid>
+</UserControl>

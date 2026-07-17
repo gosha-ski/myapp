@@ -1,0 +1,37 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="MyAvaloniaApp.Views.VerificationOperationsView"
+             Margin="10">
+
+    <Grid RowDefinitions="Auto,*" ColumnDefinitions="*,Auto">
+        <!-- Левая верхняя часть: список приборов -->
+        <GroupBox Grid.Row="0" Grid.Column="0" Header="Список приборов, участвующих в поверке" Margin="0,0,10,10">
+            <DataGrid x:Name="DgDevices" AutoGenerateColumns="False"  SelectionMode="Single">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Канал"  Width="60"/>
+                    <DataGridTextColumn Header="Модель"  Width="*"/>
+                    <DataGridTextColumn Header="Серийный №"  Width="150"/>
+                </DataGrid.Columns>
+            </DataGrid>
+        </GroupBox>
+
+        <!-- Правая верхняя часть: панель действий -->
+        <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Vertical" Spacing="8" VerticalAlignment="Top">
+            <Button Content="Тест герметичности" Classes="ActionButton"/>
+            <Button Content="Прокачка" Classes="ActionButton"/>
+            <Button Content="Съем данных" Classes="ActionButton"/>
+        </StackPanel>
+
+        <!-- Нижняя часть: таблица данных процесса -->
+        <GroupBox Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Header="Данные процесса для выбранного прибора" Margin="0,0,0,0">
+            <DataGrid x:Name="DgProcessData" AutoGenerateColumns="False" >
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="№"  Width="40"/>
+                    <DataGridTextColumn Header="Точка, МПа"  Width="100"/>
+                    <DataGridTextColumn Header="Эталон, МПа"  Width="100"/>
+                    <DataGridTextColumn Header="Расч., мА"  Width="100"/>
+                </DataGrid.Columns>
+            </DataGrid>
+        </GroupBox>
+    </Grid>
+</UserControl>

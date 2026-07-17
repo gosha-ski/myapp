@@ -2,6 +2,7 @@ using Avalonia.Controls;
 using Avalonia.Interactivity;
 using System.Collections.Generic;
 using System.Linq;
+using MyAvaloniaApp.Models;
 
 namespace MyAvaloniaApp.Views
 {
@@ -9,6 +10,9 @@ namespace MyAvaloniaApp.Views
     {
         // Храним экземпляры контролов, чтобы данные не сбрасывались при переходах
         private readonly List<Control> _stepViews = new();
+
+        public List<InstrumentModel> SelectedInstruments { get; set; } = new();
+        public List<TemplateModel> SelectedTemplates { get; set; } = new();
 
         private int _currentIndex = 0;
 
@@ -24,7 +28,10 @@ namespace MyAvaloniaApp.Views
             _stepViews.Add(new DevicesView(this));
             _stepViews.Add(new InputTemplateView(this));
             _stepViews.Add(new OuterTemplateView(this));
+            _stepViews.Add(new ProbingView(this));
             _stepViews.Add(new LoaderRangeView(this));
+            _stepViews.Add(new VerificationOperationsView(this));
+            
 
             var stepNames = new List<string>
             {
@@ -32,7 +39,9 @@ namespace MyAvaloniaApp.Views
                 "Поверяемые приборы",
                 "Входной эталон",
                 "Выходной эталон",
-                "Ряд нагружения"
+                "Опробация",
+                "Ряд нагружения",
+                "Операции поверки"
             };
 
             StepsTree.ItemsSource = stepNames;
@@ -48,6 +57,11 @@ namespace MyAvaloniaApp.Views
 
             _currentIndex = index;
             StepContent.Content = _stepViews[index];
+            if (index == 4 )
+            {
+                ProbingView step = _stepViews[index] as ProbingView;
+                step.InitializeWithInstruments();
+            }
 
             // Синхронизируем выделение в дереве (чтобы галочка тоже прыгнула)
             var names = StepsTree.ItemsSource?.Cast<string>().ToList();

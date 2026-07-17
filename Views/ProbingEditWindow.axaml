@@ -1,0 +1,62 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="MyAvaloniaApp.Views.ProbingEditWindow"
+        Title="Опробование работоспособности"
+        Width="450" Height="750">
+
+    <StackPanel Margin="20">
+        <!-- Заголовок с именем прибора -->
+        <TextBlock x:Name="LblInstrumentInfo" FontWeight="Bold" FontSize="16" Margin="0,0,0,15"/>
+
+        <!-- Группа: Внешний осмотр -->
+        <GroupBox Header="Внешний осмотр" Margin="0,0,0,15">
+            <!--  ОБЕРТКА: Один StackPanel для всего содержимого GroupBox -->
+            <StackPanel>
+                <StackPanel Orientation="Horizontal">
+                    <RadioButton x:Name="RbInspectedOk" Content="Соответствует" GroupName="Inspected" IsChecked="True" Margin="0,5,15,5"/>
+                    <RadioButton x:Name="RbInspectedFail" Content="Не соответствует" GroupName="Inspected" Margin="0,5,15,5"/>
+                </StackPanel>
+                <TextBox x:Name="TbInspectedReason" Watermark="Причина несоответствия" Margin="0,5,0,0"/>
+            </StackPanel>
+        </GroupBox>
+
+        <!-- Группа: Работоспособность -->
+        <GroupBox Header="Работоспособность" Margin="0,0,0,15">
+            <StackPanel>
+                <StackPanel Orientation="Horizontal">
+                    <RadioButton x:Name="RbFunctionalOk" Content="Соответствует" GroupName="Functional" IsChecked="True" Margin="0,5,15,5"/>
+                    <RadioButton x:Name="RbFunctionalFail" Content="Не соответствует" GroupName="Functional" Margin="0,5,15,5"/>
+                </StackPanel>
+                <TextBox x:Name="TbFunctionalReason" Watermark="Причина несоответствия" Margin="0,5,0,0"/>
+            </StackPanel>
+        </GroupBox>
+
+        <!-- Группа: Функционирование установки нуля -->
+        <GroupBox Header="Функционирование установки нуля" Margin="0,0,0,15">
+            <StackPanel>
+                <StackPanel Orientation="Horizontal">
+                    <RadioButton x:Name="RbZeroOk" Content="Соответствует" GroupName="Zero" IsChecked="True" Margin="0,5,15,5"/>
+                    <RadioButton x:Name="RbZeroFail" Content="Не соответствует" GroupName="Zero" Margin="0,5,15,5"/>
+                </StackPanel>
+                <TextBox x:Name="TbZeroReason" Watermark="Причина несоответствия" Margin="0,5,0,0"/>
+            </StackPanel>
+        </GroupBox>
+
+        <!-- Группа: Герметичность -->
+        <GroupBox Header="Герметичность" Margin="0,0,0,20">
+            <StackPanel>
+                <StackPanel Orientation="Horizontal">
+                    <RadioButton x:Name="RbSealedOk" Content="Соответствует" GroupName="Sealed" IsChecked="True" Margin="0,5,15,5"/>
+                    <RadioButton x:Name="RbSealedFail" Content="Не соответствует" GroupName="Sealed" Margin="0,5,15,5"/>
+                </StackPanel>
+                <TextBox x:Name="TbSealedReason" Watermark="Причина несоответствия" Margin="0,5,0,0"/>
+            </StackPanel>
+        </GroupBox>
+
+        <!-- Кнопки -->
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+            <Button x:Name="BtnCancel" Content="Отмена" Width="100" Margin="0,0,10,0" />
+            <Button x:Name="BtnOk" Content="OK" Width="100"  Classes="Accent" Click="BtnOkClicked"/>
+        </StackPanel>
+    </StackPanel>
+</Window>

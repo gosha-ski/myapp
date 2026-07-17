@@ -11,13 +11,13 @@ namespace MyAvaloniaApp.Views
     public partial class DevicesView : UserControl
     {
         public ObservableCollection<InstrumentModel> Devices { get; } = new();
-        private readonly Window _ownerWindow;
+        private readonly NewVerificationWindow _ownerWindow;
 
         public DevicesView(Window ownerWindow)
         {
             InitializeComponent();
             //this.DataContext = this; 
-            _ownerWindow = ownerWindow;
+            _ownerWindow = (NewVerificationWindow)ownerWindow;
         }
 
         private async void OnAddClick(object? sender, RoutedEventArgs e)
@@ -28,6 +28,7 @@ namespace MyAvaloniaApp.Views
                 InstrumentModel instrument = dialog.SelectedInstrument;
                 //Console.WriteLine($"INSIDE OnAddClick TypeCode:{instrument.TypeCode}");
                 Devices.Add(instrument);
+                _ownerWindow.SelectedInstruments.Add(instrument);
                 SelectedInstrumentsGrid.ItemsSource = Devices;
             }
         }
