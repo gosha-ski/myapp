@@ -30,6 +30,7 @@ namespace MyAvaloniaApp.Views
                 Devices.Add(instrument);
                 _ownerWindow.SelectedInstruments.Add(instrument);
                 SelectedInstrumentsGrid.ItemsSource = Devices;
+                DbHelper.AddInstrumentToVerification(_ownerWindow.VerificationId, instrument.Id, null);
             }
         }
 
@@ -37,6 +38,7 @@ namespace MyAvaloniaApp.Views
         {
             if (Devices.Count > 0)
                 Devices.RemoveAt(Devices.Count - 1);
+            //DbHelper.RemoveInstrumentFromVerification(_ownerWindow.VerificationId, )
         }
 
         private void OnSetChannelClick(object? sender, RoutedEventArgs e)

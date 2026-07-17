@@ -11,12 +11,14 @@ namespace MyAvaloniaApp.Views
 {
     public partial class VerificationInfoView : UserControl
     {
-        private readonly Window _ownerWindow;
+        private readonly NewVerificationWindow _ownerWindow;
 
         public VerificationInfoView(Window ownerWindow)
         {
-            _ownerWindow = ownerWindow;
+            _ownerWindow = (NewVerificationWindow)ownerWindow;
+            Console.WriteLine($"_ownerWindow.VerificationId: {_ownerWindow.VerificationId}");
             InitializeComponent();
+            LoadInspector();
         }
 
         // Метод для валидации данных перед переходом
@@ -24,6 +26,20 @@ namespace MyAvaloniaApp.Views
         {
             // Здесь можно добавить проверку полей
             return true; 
+        }
+
+        public void LoadInspector() 
+        {
+            Console.WriteLine("LoadInspector");
+            InspectorModel? inspector = DbHelper.GetInspectorByVerificationId(_ownerWindow.VerificationId);
+            //Console.WriteLine($"{inspector.FirstName} {inspector.MiddleName} {inspector.LastName}");
+        
+            if (inspector != null)
+            {
+                string fullname = $"{inspector.FirstName} {inspector.MiddleName} {inspector.LastName}";
+                TbSelectInspector.Text = fullname;
+                //Console.WriteLine($"{inspector.FirstName} {inspector.MiddleName} {inspector.LastName}");
+            }
         }
 
         public async void BtnAddInspectorInVerificationStepClicked(object? sender, RoutedEventArgs e)
@@ -35,6 +51,7 @@ namespace MyAvaloniaApp.Views
             {
                 InspectorModel inspector = dialog.SelectedInspector;
                 string fullname = $"{inspector.FirstName} {inspector.MiddleName} {inspector.LastName}";
+                DbHelper.SetInspectorForVerification(_ownerWindow.VerificationId, inspector.Id);
                 TbSelectInspector.Text = fullname;
             }
 

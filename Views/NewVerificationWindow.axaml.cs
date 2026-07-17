@@ -3,6 +3,7 @@ using Avalonia.Interactivity;
 using System.Collections.Generic;
 using System.Linq;
 using MyAvaloniaApp.Models;
+using System;
 
 namespace MyAvaloniaApp.Views
 {
@@ -13,13 +14,17 @@ namespace MyAvaloniaApp.Views
 
         public List<InstrumentModel> SelectedInstruments { get; set; } = new();
         public List<TemplateModel> SelectedTemplates { get; set; } = new();
+        public int VerificationId;
 
         private int _currentIndex = 0;
 
-        public NewVerificationWindow()
+        public NewVerificationWindow(int verificationId)
         {
+            VerificationId = verificationId;
             InitializeComponent();
             InitializeSteps();
+            
+            Console.WriteLine($"NewVerificationWindow verificationId:{verificationId}");
         }
 
         private void InitializeSteps()
@@ -28,7 +33,7 @@ namespace MyAvaloniaApp.Views
             _stepViews.Add(new DevicesView(this));
             _stepViews.Add(new InputTemplateView(this));
             _stepViews.Add(new OuterTemplateView(this));
-            _stepViews.Add(new ProbingView(this));
+            //_stepViews.Add(new ProbingView(this));
             _stepViews.Add(new LoaderRangeView(this));
             _stepViews.Add(new VerificationOperationsView(this));
             
@@ -39,7 +44,7 @@ namespace MyAvaloniaApp.Views
                 "Поверяемые приборы",
                 "Входной эталон",
                 "Выходной эталон",
-                "Опробация",
+                //"Опробация",
                 "Ряд нагружения",
                 "Операции поверки"
             };
@@ -57,11 +62,11 @@ namespace MyAvaloniaApp.Views
 
             _currentIndex = index;
             StepContent.Content = _stepViews[index];
-            if (index == 4 )
-            {
-                ProbingView step = _stepViews[index] as ProbingView;
-                step.InitializeWithInstruments();
-            }
+            //if (index == 4 )
+            //{
+            //    ProbingView step = _stepViews[index] as ProbingView;
+            //    step.InitializeWithInstruments();
+            //}
 
             // Синхронизируем выделение в дереве (чтобы галочка тоже прыгнула)
             var names = StepsTree.ItemsSource?.Cast<string>().ToList();

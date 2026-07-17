@@ -74,10 +74,160 @@ public static class DbHelper
         using var cmdTemplate = new SqliteCommand(createTemplateTableSql, conn);
         cmdTemplate.ExecuteNonQuery();
 
+        const string createVerificationTableSql = @"
+            CREATE TABLE IF NOT EXISTS Verification (
+                Id INTEGER PRIMARY KEY AUTOINCREMENT,
+                Comment TEXT,
+                AuthorId INTEGER,
+                FOREIGN KEY (AuthorId) REFERENCES Inspectors(Id) ON DELETE SET NULL
+            );";
+
+        using var cmdVerification = new SqliteCommand(createVerificationTableSql, conn);
+        cmdVerification.ExecuteNonQuery();
+
+        const string createVerificationInstrumentTableSql = @"
+            CREATE TABLE IF NOT EXISTS VerificationInstrument (
+                VerificationId INTEGER NOT NULL,
+                InstrumentId   INTEGER NOT NULL,
+                Channel        INTEGER,                 -- номер канала прибора в этой поверке
+                PRIMARY KEY (VerificationId, InstrumentId),
+                FOREIGN KEY (VerificationId) REFERENCES Verification(Id) ON DELETE CASCADE,
+                FOREIGN KEY (InstrumentId)   REFERENCES Instruments(Id)   ON DELETE CASCADE
+            );";
+
+        using var cmdVerificationInstrument = new SqliteCommand(createVerificationInstrumentTableSql, conn);
+        cmdVerificationInstrument.ExecuteNonQuery();
+
+        const string createProbingTableSql = @"
+            CREATE TABLE IF NOT EXISTS Probing (
+                Id                       INTEGER PRIMARY KEY AUTOINCREMENT,
+                VerificationId           INTEGER NOT NULL,
+                InstrumentId             INTEGER NOT NULL,
+
+                -- Флаги результатов проверок
+                ExternalInspection       BOOLEAN NOT NULL DEFAULT 0,
+                Operability              BOOLEAN NOT NULL DEFAULT 0,
+                ZeroSettingFunction      BOOLEAN NOT NULL DEFAULT 0,
+                Tightness                BOOLEAN NOT NULL DEFAULT 0,
+
+                -- Комментарии к проверкам
+                ExternalInspectionComment   TEXT,
+                OperabilityComment          TEXT,
+                ZeroSettingFunctionComment  TEXT,
+                TightnessComment            TEXT,
+
+                FOREIGN KEY (VerificationId) REFERENCES Verification(Id) ON DELETE CASCADE,
+                FOREIGN KEY (InstrumentId)   REFERENCES Instruments(Id)   ON DELETE CASCADE
+            );";
+
+        using var cmdProbing = new SqliteCommand(createProbingTableSql, conn);
+        cmdProbing.ExecuteNonQuery();
+
         Console.WriteLine("БД готова!");
     }
 
     public static void Initialize() { /* Пустой метод, нужен только чтобы вызвать статический конструктор */ }
+
+    public static int SaveVerification(string? comment)
+    {
+        using var conn = new SqliteConnection(ConnectionString);
+        conn.Open();
+
+        const string sql = @"
+        INSERT INTO Verification (Comment)
+        VALUES (@Comment);
+        SELECT last_insert_rowid();";
+
+        using var cmd = new SqliteCommand(sql, conn);
+        cmd.Parameters.AddWithValue("@Comment", (object?)comment ?? DBNull.Value);
+
+        // Возвращаем ID новой поверки
+        return Convert.ToInt32(cmd.ExecuteScalar());
+    }
+
+    public static List<VerificationModel> GetAllVerifications()
+    {
+        var list = new List<VerificationModel>();
+
+        using var conn = new SqliteConnection(ConnectionString);
+        conn.Open();
+
+        const string sql = @"
+        SELECT Id, Comment
+        FROM Verification;";
+
+        using var cmd = new SqliteCommand(sql, conn);
+        using var reader = cmd.ExecuteReader();
+
+        while (reader.Read())
+        {
+            list.Add(new VerificationModel
+            {
+                Id = reader.GetInt32(reader.GetOrdinal("Id")),
+                Comment = reader.IsDBNull(reader.GetOrdinal("Comment"))
+                    ? null
+                    : reader.GetString(reader.GetOrdinal("Comment"))
+            });
+        }
+
+        return list;
+    }
+
+
+    public static void AddInstrumentToVerification(int verificationId, int instrumentId, int? channel)
+    {
+        Console.WriteLine("AddInstrumentToVerification");
+        using var conn = new SqliteConnection(ConnectionString);
+        conn.Open();
+
+        const string sql = @"
+        INSERT INTO VerificationInstrument (
+            VerificationId,
+            InstrumentId,
+            Channel
+        ) VALUES (
+            @VerificationId,
+            @InstrumentId,
+            @Channel
+        );";
+
+        using var cmd = new SqliteCommand(sql, conn);
+        cmd.Parameters.AddWithValue("@VerificationId", verificationId);
+        cmd.Parameters.AddWithValue("@InstrumentId", instrumentId);
+        cmd.Parameters.AddWithValue("@Channel", (object?)channel ?? DBNull.Value);
+
+        cmd.ExecuteNonQuery();
+    }
+
+    public static void RemoveInstrumentFromVerification(int verificationId, int instrumentId)
+    {
+        Console.WriteLine($"RemoveInstrumentFromVerification: VerificationId={verificationId}, InstrumentId={instrumentId}");
+
+        using var conn = new SqliteConnection(ConnectionString);
+        conn.Open();
+
+        const string sql = @"
+        DELETE FROM VerificationInstrument
+        WHERE VerificationId = @VerificationId
+          AND InstrumentId   = @InstrumentId;";
+
+        using var cmd = new SqliteCommand(sql, conn);
+        cmd.Parameters.AddWithValue("@VerificationId", verificationId);
+        cmd.Parameters.AddWithValue("@InstrumentId", instrumentId);
+
+        int rowsAffected = cmd.ExecuteNonQuery();
+
+        if (rowsAffected == 0)
+        {
+            Console.WriteLine("Запись не найдена — удалять нечего.");
+        }
+        else
+        {
+            Console.WriteLine($"Удалено строк: {rowsAffected}");
+        }
+    }
+
+
 
     public static void SaveTemplate(TemplateModel template)
     {
@@ -306,6 +456,40 @@ public static class DbHelper
 
     }
 
+    /// <summary>
+    /// Назначает или меняет поверителя для существующей поверки.
+    /// </summary>
+    public static void SetInspectorForVerification(int verificationId, int? inspectorId)
+    {
+        Console.WriteLine($"SetInspectorForVerification: VerificationId={verificationId}, InspectorId={inspectorId}");
+
+        using var conn = new SqliteConnection(ConnectionString);
+        conn.Open();
+
+        const string sql = @"
+        UPDATE Verification
+        SET AuthorId = @AuthorId
+        WHERE Id = @VerificationId;";
+
+        using var cmd = new SqliteCommand(sql, conn);
+        cmd.Parameters.AddWithValue("@VerificationId", verificationId);
+        cmd.Parameters.AddWithValue("@AuthorId", (object?)inspectorId ?? DBNull.Value);
+
+        int rowsAffected = cmd.ExecuteNonQuery();
+
+        if (rowsAffected == 0)
+        {
+            Console.WriteLine("Ошибка: поверка с таким ID не найдена!");
+        }
+        else
+        {
+            Console.WriteLine(inspectorId.HasValue
+                ? $"Поверитель успешно назначен для поверки {verificationId}"
+                : $"Поверитель снят с поверки {verificationId}");
+        }
+    }
+
+
     public static List<InspectorModel> GetAllInspectors()
     {
         var list = new List<InspectorModel>();
@@ -344,6 +528,83 @@ public static class DbHelper
         if (rowsAffected == 0)
             throw new InvalidOperationException("Не удалось удалить: запись с таким Id не найдена.");
     }
+
+    public static InspectorModel? GetInspectorById(int id)
+    {
+        using var conn = new SqliteConnection(ConnectionString);
+        conn.Open();
+
+        const string sql = @"
+        SELECT Id, FirstName, LastName, MiddleName
+        FROM Inspectors
+        WHERE Id = @Id;";
+
+        using var cmd = new SqliteCommand(sql, conn);
+        cmd.Parameters.AddWithValue("@Id", id);
+
+        using var reader = cmd.ExecuteReader();
+        if (!reader.Read())
+            return null; // Инспектор не найден
+
+        return new InspectorModel
+        {
+            Id = reader.GetInt32(reader.GetOrdinal("Id")),
+            FirstName = reader.IsDBNull(reader.GetOrdinal("FirstName"))
+                ? null
+                : reader.GetString(reader.GetOrdinal("FirstName")),
+            LastName = reader.IsDBNull(reader.GetOrdinal("LastName"))
+                ? null
+                : reader.GetString(reader.GetOrdinal("LastName")),
+            MiddleName = reader.IsDBNull(reader.GetOrdinal("MiddleName"))
+                ? null
+                : reader.GetString(reader.GetOrdinal("MiddleName"))
+        };
+    }
+
+    public static InspectorModel? GetInspectorByVerificationId(int verificationId)
+    {
+        Console.WriteLine($"GetInspectorByVerificationId verificationId:{verificationId}");
+        using var conn = new SqliteConnection(ConnectionString);
+        conn.Open();
+
+        const string sql = @"
+        SELECT i.Id, i.FirstName, i.LastName, i.MiddleName
+        FROM Verification AS v
+        LEFT JOIN Inspectors AS i ON v.AuthorId = i.Id
+        WHERE v.Id = @VerificationId;";
+
+        using var cmd = new SqliteCommand(sql, conn);
+        cmd.Parameters.AddWithValue("@VerificationId", verificationId);
+
+        using var reader = cmd.ExecuteReader();
+        if (!reader.Read())
+        {
+            Console.WriteLine("Поверка не найдена либо нет данных");
+            return null; // Поверка не найдена либо нет данных
+        }
+
+        // Если AuthorId был NULL, то все поля инспектора будут NULL — корректно обработаем
+        if (reader.IsDBNull(reader.GetOrdinal("Id")))
+        {
+            Console.WriteLine("Поверка не найдена либо нет данных");
+            return null;
+        }
+
+        return new InspectorModel
+        {
+            Id = reader.GetInt32(reader.GetOrdinal("Id")),
+            FirstName = reader.IsDBNull(reader.GetOrdinal("FirstName"))
+                ? null
+                : reader.GetString(reader.GetOrdinal("FirstName")),
+            LastName = reader.IsDBNull(reader.GetOrdinal("LastName"))
+                ? null
+                : reader.GetString(reader.GetOrdinal("LastName")),
+            MiddleName = reader.IsDBNull(reader.GetOrdinal("MiddleName"))
+                ? null
+                : reader.GetString(reader.GetOrdinal("MiddleName"))
+        };
+    }
+
 
 
 

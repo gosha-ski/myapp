@@ -43,14 +43,12 @@
             <StackPanel Spacing="5">
                 <TextBlock Text="Действия со списком" FontWeight="Bold" Margin="0,0,0,5"/>
                 <Button x:Name="BtnMetro" Content="Метрологический ряд" Margin="0,0,0,2"/>
-                <Button x:Name="BtnAdd" Content="Добавить точки..." Margin="0,0,0,2"/>
+				
                 <Button x:Name="BtnDelete" Content="Удалить точку" Margin="0,0,0,2"/>
                 <Separator Margin="0,5,0,5"/>
-                <Button x:Name="BtnMoveUp" Content="Переместить точку вверх" Margin="0,0,0,2"/>
-                <Button x:Name="BtnMoveDown" Content="Переместить точку вниз" Margin="0,0,0,2"/>
+                
                 <Separator Margin="0,5,0,5"/>
-                <Button x:Name="BtnLoad" Content="Загрузить шаблон" Margin="0,0,0,2"/>
-                <Button x:Name="BtnSave" Content="Сохранить как шаблон" Margin="0,0,0,2"/>
+                
             </StackPanel>
         </Border>
     </Grid>
