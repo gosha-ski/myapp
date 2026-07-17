@@ -1,0 +1,84 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:models="using:MyAvaloniaApp.Models"
+        mc:Ignorable="d" d:DesignWidth="1024" d:DesignHeight="768"
+        x:Class="MyAvaloniaApp.Views.ConnectionComWindow"
+        Title="Список доступных поверяемых приборов" Width="1024" Height="768">
+    <StackPanel Margin="15">
+        
+        <!-- Секция: Подготовительные действия -->
+        <Border Margin="0,0,0,15" Padding="10" BorderBrush="#CCCCCC" BorderThickness="1" CornerRadius="5">
+            <StackPanel>
+                <TextBlock Text="Подготовительные действия" FontWeight="Bold" Margin="0,0,0,10"/>
+                <TextBlock Text="Подготовьте прибор в соответствии с руководством по эксплуатации на него." TextWrapping="Wrap"/>
+            </StackPanel>
+        </Border>
+
+        <!-- Секция: Настройки связи по COM-порту -->
+        <Border Margin="0,0,0,15" Padding="10" BorderBrush="#CCCCCC" BorderThickness="1" CornerRadius="5">
+            <StackPanel>
+                <TextBlock Text="Настройки связи по COM-порту" FontWeight="Bold" Margin="0,0,0,10"/>
+                <Grid ColumnDefinitions="150,*,150,*" RowDefinitions="Auto,Auto" Margin="0,5">
+                    
+                    <TextBlock Grid.Row="0" Grid.Column="0" Text="COM-порт:" VerticalAlignment="Center"/>
+                    <ComboBox Grid.Row="0" Grid.Column="1" Margin="0,5">
+                        <ComboBoxItem Content="COM1" IsSelected="True"/>
+                        <ComboBoxItem Content="COM2"/>
+                        <ComboBoxItem Content="COM3"/>
+                        <ComboBoxItem Content="COM4"/>
+                    </ComboBox>
+
+                    <TextBlock Grid.Row="0" Grid.Column="2" Text="Паритет:" VerticalAlignment="Center" Margin="15,0,0,0"/>
+                    <ComboBox Grid.Row="0" Grid.Column="3" Margin="0,5">
+                        <ComboBoxItem Content="None" IsSelected="True"/>
+                        <ComboBoxItem Content="Even"/>
+                        <ComboBoxItem Content="Odd"/>
+                    </ComboBox>
+
+                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Скорость, бит/с:" VerticalAlignment="Center" Margin="0,5,0,0"/>
+                    <ComboBox Grid.Row="1" Grid.Column="1" Margin="0,5">
+                        <ComboBoxItem Content="9600" IsSelected="True"/>
+                        <ComboBoxItem Content="19200"/>
+                        <ComboBoxItem Content="38400"/>
+                        <ComboBoxItem Content="57600"/>
+                        <ComboBoxItem Content="115200"/>
+                    </ComboBox>
+
+                    <TextBlock Grid.Row="1" Grid.Column="2" Text="Количество стоп-битов:" VerticalAlignment="Center" Margin="15,5,0,0"/>
+                    <ComboBox Grid.Row="1" Grid.Column="3" Margin="0,5">
+                        <ComboBoxItem Content="1" IsSelected="True"/>
+                        <ComboBoxItem Content="2"/>
+                    </ComboBox>
+                </Grid>
+            </StackPanel>
+        </Border>
+
+        <!-- Секция: Параметры установки давления -->
+        <Border Margin="0,0,0,15" Padding="10" BorderBrush="#CCCCCC" BorderThickness="1" CornerRadius="5">
+            <StackPanel>
+                <TextBlock Text="Параметры установки давления" FontWeight="Bold" Margin="0,0,0,10"/>
+                <Grid ColumnDefinitions="200,*" RowDefinitions="Auto,Auto,Auto" Margin="0,5">
+                    
+                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Макс. время выхода на точку, мин" VerticalAlignment="Center"/>
+                    <NumericUpDown Grid.Row="0" Grid.Column="1" Value="10" Minimum="0" Maximum="1000" Margin="0,5"/>
+
+                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Время выдержки на точке, сек" VerticalAlignment="Center" Margin="0,5,0,0"/>
+                    <NumericUpDown Grid.Row="1" Grid.Column="1" Value="30" Minimum="0" Maximum="3600" Margin="0,5"/>
+
+                    <TextBlock Grid.Row="2" Grid.Column="0" Text="Готовность выхода на точку, Па" VerticalAlignment="Center" Margin="0,5,0,0"/>
+                    <NumericUpDown Grid.Row="2" Grid.Column="1" Value="1000" Minimum="0" Maximum="100000" Margin="0,5"/>
+                </Grid>
+            </StackPanel>
+        </Border>
+
+        <!-- Кнопки управления -->
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="10" Margin="0,20,0,0">
+            <Button Content="Проверка связи" Name="BtnCheckConnection" Width="120"/>
+            <Button Content="Отмена" IsCancel="True" Width="100"/>
+            <Button Content="OK" IsDefault="True" Name="BtnOk" Width="100"/>
+        </StackPanel>
+
+    </StackPanel>
+</Window>

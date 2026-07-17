@@ -5,6 +5,7 @@ using MyAvaloniaApp;
 using System.Threading.Tasks;
 using MyAvaloniaApp.Models;
 using System;
+using System.Collections.Generic;
 
 namespace MyAvaloniaApp.Views
 {
@@ -18,6 +19,13 @@ namespace MyAvaloniaApp.Views
             InitializeComponent();
             //this.DataContext = this; 
             _ownerWindow = (NewVerificationWindow)ownerWindow;
+            LoadInstruments();
+        }
+
+        private void LoadInstruments()
+        {
+            List<InstrumentModel> instruments = DbHelper.GetInstrumentsByVerificationId(_ownerWindow.VerificationId);
+            SelectedInstrumentsGrid.ItemsSource = instruments;
         }
 
         private async void OnAddClick(object? sender, RoutedEventArgs e)

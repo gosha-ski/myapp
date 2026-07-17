@@ -227,6 +227,90 @@ public static class DbHelper
         }
     }
 
+    public static List<InstrumentModel> GetInstrumentsByVerificationId(int verificationId)
+    {
+        var result = new List<InstrumentModel>();
+
+        using var conn = new SqliteConnection(ConnectionString);
+        conn.Open();
+
+        const string sql = @"
+        SELECT i.*
+        FROM Instruments AS i
+        INNER JOIN VerificationInstrument AS vi
+            ON i.Id = vi.InstrumentId
+        WHERE vi.VerificationId = @VerificationId;";
+
+        using var cmd = new SqliteCommand(sql, conn);
+        cmd.Parameters.AddWithValue("@VerificationId", verificationId);
+
+        using var reader = cmd.ExecuteReader();
+
+        while (reader.Read())
+        {
+            var instrument = new InstrumentModel
+            {
+                Id = reader.GetInt32(reader.GetOrdinal("Id")),
+                TypeCode = reader.GetInt32(reader.GetOrdinal("TypeCode")),
+                Model = reader.IsDBNull(reader.GetOrdinal("Model"))
+                    ? null
+                    : reader.GetString(reader.GetOrdinal("Model")),
+                SerialNumber = reader.IsDBNull(reader.GetOrdinal("SerialNumber"))
+                    ? null
+                    : reader.GetString(reader.GetOrdinal("SerialNumber")),
+                InventoryNumber = reader.IsDBNull(reader.GetOrdinal("InventoryNumber"))
+                    ? null
+                    : reader.GetString(reader.GetOrdinal("InventoryNumber")),
+                IntervalYears = reader.IsDBNull(reader.GetOrdinal("IntervalYears"))
+                    ? (int?)null
+                    : reader.GetInt32(reader.GetOrdinal("IntervalYears")),
+                Location = reader.IsDBNull(reader.GetOrdinal("Location"))
+                    ? null
+                    : reader.GetString(reader.GetOrdinal("Location")),
+                InServiceDate = reader.IsDBNull(reader.GetOrdinal("InServiceDate"))
+                    ? DateTime.Today
+                    : DateTime.Parse(reader.GetString(reader.GetOrdinal("InServiceDate"))),
+
+                // Читаем как int из БД, потом конвертируем в строку
+                Units = reader.IsDBNull(reader.GetOrdinal("Units"))
+                    ? null
+                    : GetUnitStringByCode(reader.GetInt32(reader.GetOrdinal("Units"))),
+
+                LowerLimit = reader.IsDBNull(reader.GetOrdinal("LowerLimit"))
+                    ? (double?)null
+                    : reader.GetDouble(reader.GetOrdinal("LowerLimit")),
+                UpperLimit = reader.IsDBNull(reader.GetOrdinal("UpperLimit"))
+                    ? (double?)null
+                    : reader.GetDouble(reader.GetOrdinal("UpperLimit")),
+                AccuracyClass = reader.IsDBNull(reader.GetOrdinal("AccuracyClass"))
+                    ? (double?)null
+                    : reader.GetDouble(reader.GetOrdinal("AccuracyClass")),
+                VariationLimit = reader.IsDBNull(reader.GetOrdinal("VariationLimit"))
+                    ? (double?)null
+                    : reader.GetDouble(reader.GetOrdinal("VariationLimit")),
+                AccuracyMethodCode = reader.GetInt32(reader.GetOrdinal("AccuracyMethodCode"))
+            };
+
+            result.Add(instrument);
+        }
+
+        return result;
+    }
+
+    // Заглушка конвертера: замени на свой Enum.ToString()
+    private static string? GetUnitStringByCode(int code)
+    {
+        return code switch
+        {
+            0 => "Па",
+            1 => "кПа",
+            2 => "МПа",
+            3 => "В",
+            4 => "mA"
+        };
+    }
+
+
 
 
     public static void SaveTemplate(TemplateModel template)
@@ -348,6 +432,74 @@ public static class DbHelper
                 AccuracyMethodCode = reader.GetInt32(reader.GetOrdinal("AccuracyMethodCode"))
             };
     }
+
+    //public static void UpdateInstrument(InstrumentModel instrument)
+    //{
+    //    if (instrument.Id <= 0)
+    //        throw new ArgumentException("Нельзя обновить инструмент с Id <= 0", nameof(instrument.Id));
+
+    //    using var conn = new SqliteConnection(ConnectionString);
+    //    conn.Open();
+
+    //    const string sql = @"
+    //    UPDATE Instruments
+    //    SET 
+    //        TypeCode          = @TypeCode,
+    //        Model             = @Model,
+    //        SerialNumber      = @SerialNumber,
+    //        InventoryNumber   = @InventoryNumber,
+    //        IntervalYears     = @IntervalYears,
+    //        Location          = @Location,
+    //        InServiceDate     = @InServiceDate,
+    //        Units             = @Units,
+    //        LowerLimit        = @LowerLimit,
+    //        UpperLimit        = @UpperLimit,
+    //        AccuracyClass     = @AccuracyClass,
+    //        VariationLimit    = @VariationLimit,
+    //        AccuracyMethodCode= @AccuracyMethodCode
+    //    WHERE Id = @Id;";
+
+    //    using var cmd = new SqliteCommand(sql, conn);
+
+    //    // Обязательные поля (не nullable)
+    //    cmd.Parameters.AddWithValue("@Id", instrument.Id);
+    //    cmd.Parameters.AddWithValue("@TypeCode", instrument.TypeCode);
+    //    cmd.Parameters.AddWithValue("@AccuracyMethodCode", instrument.AccuracyMethodCode);
+
+    //    // Nullable строковые поля
+    //    cmd.Parameters.AddWithValue("@Model", (object?)instrument.Model ?? DBNull.Value);
+    //    cmd.Parameters.AddWithValue("@SerialNumber", (object?)instrument.SerialNumber ?? DBNull.Value);
+    //    cmd.Parameters.AddWithValue("@InventoryNumber", (object?)instrument.InventoryNumber ?? DBNull.Value);
+    //    cmd.Parameters.AddWithValue("@Location", (object?)instrument.Location ?? DBNull.Value);
+
+    //    // Если Units в БД хранится как TEXT (рекомендуемый Вариант 2)
+    //    cmd.Parameters.AddWithValue("@Units", (object?)instrument.Units ?? DBNull.Value);
+
+    //    // Nullable числовые поля
+    //    cmd.Parameters.AddWithValue("@IntervalYears", (object?)instrument.IntervalYears ?? DBNull.Value);
+    //    cmd.Parameters.AddWithValue("@LowerLimit", (object?)instrument.LowerLimit ?? DBNull.Value);
+    //    cmd.Parameters.AddWithValue("@UpperLimit", (object?)instrument.UpperLimit ?? DBNull.Value);
+    //    cmd.Parameters.AddWithValue("@AccuracyClass", (object?)instrument.AccuracyClass ?? DBNull.Value);
+    //    cmd.Parameters.AddWithValue("@VariationLimit", (object?)instrument.VariationLimit ?? DBNull.Value);
+
+    //    // Дата: в SQLite лучше хранить как ISO-строку "yyyy-MM-dd"
+    //    string dateValue = instrument.InServiceDate.ToString("yyyy-MM-dd");
+    //    cmd.Parameters.AddWithValue("@InServiceDate", dateValue);
+
+    //    int rowsAffected = cmd.ExecuteNonQuery();
+
+    //    if (rowsAffected == 0)
+    //    {
+    //        // Это значит, что инструмент с таким ID не найден
+    //        Console.WriteLine($"Ошибка: не удалось обновить инструмент. ID={instrument.Id} не найден в базе.");
+    //        throw new InvalidOperationException($"Инструмент с ID {instrument.Id} не найден. Возможно, он был удалён.");
+    //    }
+    //    else
+    //    {
+    //        Console.WriteLine($"Инструмент ID={instrument.Id} успешно обновлён.");
+    //    }
+    //}
+
 
 
     public static void SaveInstrument(InstrumentModel instrument)

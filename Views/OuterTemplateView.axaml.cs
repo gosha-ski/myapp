@@ -28,6 +28,13 @@ namespace MyAvaloniaApp.Views
 
         }
 
+        public void PrepareOuterTemplateClicked(object? sender, RoutedEventArgs e)
+        {
+            var dialog = new ConnectionComWindow();
+            dialog.ShowDialog(_ownerWindow);
+
+        }
+
         private void FillFields(TemplateModel item)
         {
             DeviceTypeBox.Text = item.DeviceType;
