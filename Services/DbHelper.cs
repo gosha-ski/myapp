@@ -433,72 +433,72 @@ public static class DbHelper
             };
     }
 
-    //public static void UpdateInstrument(InstrumentModel instrument)
-    //{
-    //    if (instrument.Id <= 0)
-    //        throw new ArgumentException("Нельзя обновить инструмент с Id <= 0", nameof(instrument.Id));
+    public static void EditInstrument(InstrumentModel instrument)
+    {
+        if (instrument.Id <= 0)
+            throw new ArgumentException("Нельзя обновить инструмент с Id <= 0", nameof(instrument.Id));
 
-    //    using var conn = new SqliteConnection(ConnectionString);
-    //    conn.Open();
+        using var conn = new SqliteConnection(ConnectionString);
+        conn.Open();
 
-    //    const string sql = @"
-    //    UPDATE Instruments
-    //    SET 
-    //        TypeCode          = @TypeCode,
-    //        Model             = @Model,
-    //        SerialNumber      = @SerialNumber,
-    //        InventoryNumber   = @InventoryNumber,
-    //        IntervalYears     = @IntervalYears,
-    //        Location          = @Location,
-    //        InServiceDate     = @InServiceDate,
-    //        Units             = @Units,
-    //        LowerLimit        = @LowerLimit,
-    //        UpperLimit        = @UpperLimit,
-    //        AccuracyClass     = @AccuracyClass,
-    //        VariationLimit    = @VariationLimit,
-    //        AccuracyMethodCode= @AccuracyMethodCode
-    //    WHERE Id = @Id;";
+        const string sql = @"
+        UPDATE Instruments
+        SET 
+            TypeCode          = @TypeCode,
+            Model             = @Model,
+            SerialNumber      = @SerialNumber,
+            InventoryNumber   = @InventoryNumber,
+            IntervalYears     = @IntervalYears,
+            Location          = @Location,
+            InServiceDate     = @InServiceDate,
+            Units             = @Units,
+            LowerLimit        = @LowerLimit,
+            UpperLimit        = @UpperLimit,
+            AccuracyClass     = @AccuracyClass,
+            VariationLimit    = @VariationLimit,
+            AccuracyMethodCode= @AccuracyMethodCode
+        WHERE Id = @Id;";
 
-    //    using var cmd = new SqliteCommand(sql, conn);
+        using var cmd = new SqliteCommand(sql, conn);
 
-    //    // Обязательные поля (не nullable)
-    //    cmd.Parameters.AddWithValue("@Id", instrument.Id);
-    //    cmd.Parameters.AddWithValue("@TypeCode", instrument.TypeCode);
-    //    cmd.Parameters.AddWithValue("@AccuracyMethodCode", instrument.AccuracyMethodCode);
+        // Обязательные поля (не nullable)
+        cmd.Parameters.AddWithValue("@Id", instrument.Id);
+        cmd.Parameters.AddWithValue("@TypeCode", instrument.TypeCode);
+        cmd.Parameters.AddWithValue("@AccuracyMethodCode", instrument.AccuracyMethodCode);
 
-    //    // Nullable строковые поля
-    //    cmd.Parameters.AddWithValue("@Model", (object?)instrument.Model ?? DBNull.Value);
-    //    cmd.Parameters.AddWithValue("@SerialNumber", (object?)instrument.SerialNumber ?? DBNull.Value);
-    //    cmd.Parameters.AddWithValue("@InventoryNumber", (object?)instrument.InventoryNumber ?? DBNull.Value);
-    //    cmd.Parameters.AddWithValue("@Location", (object?)instrument.Location ?? DBNull.Value);
+        // Nullable строковые поля
+        cmd.Parameters.AddWithValue("@Model", (object?)instrument.Model ?? DBNull.Value);
+        cmd.Parameters.AddWithValue("@SerialNumber", (object?)instrument.SerialNumber ?? DBNull.Value);
+        cmd.Parameters.AddWithValue("@InventoryNumber", (object?)instrument.InventoryNumber ?? DBNull.Value);
+        cmd.Parameters.AddWithValue("@Location", (object?)instrument.Location ?? DBNull.Value);
 
-    //    // Если Units в БД хранится как TEXT (рекомендуемый Вариант 2)
-    //    cmd.Parameters.AddWithValue("@Units", (object?)instrument.Units ?? DBNull.Value);
+        // Если Units в БД хранится как TEXT (рекомендуемый Вариант 2)
+        cmd.Parameters.AddWithValue("@Units", (object?)instrument.Units ?? DBNull.Value);
 
-    //    // Nullable числовые поля
-    //    cmd.Parameters.AddWithValue("@IntervalYears", (object?)instrument.IntervalYears ?? DBNull.Value);
-    //    cmd.Parameters.AddWithValue("@LowerLimit", (object?)instrument.LowerLimit ?? DBNull.Value);
-    //    cmd.Parameters.AddWithValue("@UpperLimit", (object?)instrument.UpperLimit ?? DBNull.Value);
-    //    cmd.Parameters.AddWithValue("@AccuracyClass", (object?)instrument.AccuracyClass ?? DBNull.Value);
-    //    cmd.Parameters.AddWithValue("@VariationLimit", (object?)instrument.VariationLimit ?? DBNull.Value);
+        // Nullable числовые поля
+        cmd.Parameters.AddWithValue("@IntervalYears", (object?)instrument.IntervalYears ?? DBNull.Value);
+        cmd.Parameters.AddWithValue("@LowerLimit", (object?)instrument.LowerLimit ?? DBNull.Value);
+        cmd.Parameters.AddWithValue("@UpperLimit", (object?)instrument.UpperLimit ?? DBNull.Value);
+        cmd.Parameters.AddWithValue("@AccuracyClass", (object?)instrument.AccuracyClass ?? DBNull.Value);
+        cmd.Parameters.AddWithValue("@VariationLimit", (object?)instrument.VariationLimit ?? DBNull.Value);
 
-    //    // Дата: в SQLite лучше хранить как ISO-строку "yyyy-MM-dd"
-    //    string dateValue = instrument.InServiceDate.ToString("yyyy-MM-dd");
-    //    cmd.Parameters.AddWithValue("@InServiceDate", dateValue);
+        // Дата: в SQLite лучше хранить как ISO-строку "yyyy-MM-dd"
+        string dateValue = instrument.InServiceDate.ToString("yyyy-MM-dd");
+        cmd.Parameters.AddWithValue("@InServiceDate", dateValue);
 
-    //    int rowsAffected = cmd.ExecuteNonQuery();
+        int rowsAffected = cmd.ExecuteNonQuery();
 
-    //    if (rowsAffected == 0)
-    //    {
-    //        // Это значит, что инструмент с таким ID не найден
-    //        Console.WriteLine($"Ошибка: не удалось обновить инструмент. ID={instrument.Id} не найден в базе.");
-    //        throw new InvalidOperationException($"Инструмент с ID {instrument.Id} не найден. Возможно, он был удалён.");
-    //    }
-    //    else
-    //    {
-    //        Console.WriteLine($"Инструмент ID={instrument.Id} успешно обновлён.");
-    //    }
-    //}
+        if (rowsAffected == 0)
+        {
+            // Это значит, что инструмент с таким ID не найден
+            Console.WriteLine($"Ошибка: не удалось обновить инструмент. ID={instrument.Id} не найден в базе.");
+            throw new InvalidOperationException($"Инструмент с ID {instrument.Id} не найден. Возможно, он был удалён.");
+        }
+        else
+        {
+            Console.WriteLine($"Инструмент ID={instrument.Id} успешно обновлён.");
+        }
+    }
 
 
 

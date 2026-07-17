@@ -51,7 +51,7 @@
                 <Button Name="BtnAddInstrument" Click="BtnAddInstrumentClicked" Content="Добавить прибор" Margin="0,2"/>
                 <Button Name="BtnCopyInstrument" Content="Копировать в…" Margin="0,2"/>
                 <Button Name="BtnDuplicateInstrument" Click="BtnDuplicateInstrumentClicked" Content="Дублировать" Margin="0,2"/>
-                <Button Name="BtnEditInstrument" Content="Редактировать прибор" Margin="0,2"/>
+                <Button Name="BtnEditInstrument" Content="Редактировать прибор" Margin="0,2" Click="BtnEditInstrumentClicked"/>
                 <Button Name="BtnDeleteInstrument" Click="BtnDeleteInstrumentClicked" Content="Удалить прибор" Margin="0,2"/>
                 <Button Name="BtnSearchInstrument" Content="Поиск прибора" Margin="0,2"/>
             </StackPanel>

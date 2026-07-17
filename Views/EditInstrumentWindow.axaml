@@ -1,0 +1,97 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="1024" d:DesignHeight="768"
+        x:Class="MyAvaloniaApp.Views.EditInstrumentWindow"
+        Title="Список доступных поверяемых приборов" Width="1024" Height="768">
+
+        <Grid RowDefinitions="Auto, Auto, Auto, Auto, Auto, Auto" ColumnDefinitions="*">
+
+        <!-- Тип прибора -->
+        <GroupBox Grid.Row="0" Header="Тип прибора" Margin="0,0,0,12">
+            <Grid ColumnDefinitions="*, *, *, *">
+                <RadioButton Grid.Column="0" Name="RbTypeManometer" Content="Технический манометр" IsChecked="True" GroupName="InstrumentType"/>
+                <RadioButton Grid.Column="1" Name="RbTypeDdUnified" Content="ДД с унифицированным сигналом" GroupName="InstrumentType" Margin="8,0,0,0"/>
+                <RadioButton Grid.Column="2" Name="RbTypeDdVirtual" Content="ДД с виртуальным сигналом" GroupName="InstrumentType" Margin="8,0,0,0"/>
+                <RadioButton Grid.Column="3" Name="RbTypeDdHart" Content="ДД с HART-сигналом" GroupName="InstrumentType" Margin="8,0,0,0"/>
+            </Grid>
+        </GroupBox>
+
+        <!-- Общие сведения -->
+        <GroupBox Grid.Row="1" Header="Общие сведения" Margin="0,0,0,12">
+            <!-- ИСПРАВЛЕНИЕ: 6 строк (индексы 0-5) вместо 5 -->
+            <Grid ColumnDefinitions="Auto, *, Auto" RowDefinitions="Auto, Auto, Auto, Auto, Auto, Auto" Margin="4">
+                
+                <!-- Строка 0: Модель прибора -->
+                <TextBlock Grid.Row="0" Grid.Column="0" Text="Модель прибора:" VerticalAlignment="Center" Margin="0,0,8,4"/>
+                <TextBox Grid.Row="0" Grid.Column="1" Name="TbModel" Margin="0,0,8,4"/>
+                <Button Grid.Row="0" Grid.Column="2" Name="BtnModelLookup" Content="+" Width="24" Margin="4,0,0,4"/>
+
+                <!-- Строка 1: Серийный номер -->
+                <TextBlock Grid.Row="1" Grid.Column="0" Text="Серийный номер:" VerticalAlignment="Center" Margin="0,0,8,4"/>
+                <TextBox Grid.Row="1" Grid.Column="1" Name="TbSerial" Margin="0,0,8,4"/>
+                <!-- Колонка 2 пустая, чтобы сохранить выравнивание сетки -->
+
+                <!-- Строка 2: Инвентарный номер -->
+                <TextBlock Grid.Row="2" Grid.Column="0" Text="Инвентарный номер:" VerticalAlignment="Center" Margin="0,0,8,4"/>
+                <TextBox Grid.Row="2" Grid.Column="1" Name="TbInventory" Margin="0,0,8,4"/>
+                <!-- Колонка 2 пустая -->
+
+                <!-- Строка 3: Межповерочный интервал -->
+                <TextBlock Grid.Row="3" Grid.Column="0" Text="Межповерочный интервал:" VerticalAlignment="Center" Margin="0,0,8,4"/>
+                <ComboBox Grid.Row="3" Grid.Column="1" Name="CbInterval" Margin="0,0,8,4"/>
+                <!-- Колонка 2 пустая -->
+
+                <!-- Строка 4: Место эксплуатации -->
+                <TextBlock Grid.Row="4" Grid.Column="0" Text="Место эксплуатации:" VerticalAlignment="Center" Margin="0,0,8,4"/>
+                <TextBox Grid.Row="4" Grid.Column="1" Name="TbLocation" Margin="0,0,8,4"/>
+                <Button Grid.Row="4" Grid.Column="2" Name="BtnLocationLookup" Content="+" Width="24" Margin="4,0,0,4"/>
+
+                <!-- Строка 5: Дата ввода в эксплуатацию -->
+                <TextBlock Grid.Row="5" Grid.Column="0" Text="Дата ввода в эксплуатацию:" VerticalAlignment="Center" Margin="0,0,8,4"/>
+                <DatePicker Grid.Row="5" Grid.Column="1" Name="DpInService" SelectedDate="2011-01-01" Margin="0,0,8,4"/>
+                <!-- Колонка 2 пустая -->
+            </Grid>
+        </GroupBox>
+
+        <!-- Технические характеристики -->
+        <GroupBox Grid.Row="2" Header="Технические характеристики" Margin="0,0,0,12">
+            <Grid ColumnDefinitions="Auto, *" RowDefinitions="Auto, Auto,Auto" Margin="4">
+                <TextBlock Grid.Row="0" Grid.Column="0" Text="Единицы измерения прибора:" VerticalAlignment="Center" Margin="0,0,8,4"/>
+                <ComboBox Grid.Row="0" Grid.Column="1" Name="CbUnits" Margin="0,0,8,4"/>
+
+                <TextBlock Grid.Row="1" Grid.Column="0" Text="Нижний предел измерений прибора:" VerticalAlignment="Center" Margin="8,0,8,4"/>
+                <TextBox Grid.Row="1" Grid.Column="1" Name="TbLowerLimit" Margin="0,0,8,4"/>
+
+                <TextBlock Grid.Row="2" Grid.Column="0" Text="Верхний предел измерений прибора:" VerticalAlignment="Center" Margin="8,0,8,4"/>
+                <TextBox Grid.Row="2" Grid.Column="1" Name="TbUpperLimit" Margin="0,0,8,4"/>
+            </Grid>
+        </GroupBox>
+
+        <!-- Класс точности -->
+        <GroupBox Grid.Row="3" Header="Класс точности" Margin="0,0,0,12">
+            <Grid ColumnDefinitions="Auto, *" RowDefinitions="Auto, Auto, Auto" Margin="4">
+                <TextBlock Grid.Row="0" Grid.Column="0" Text="Класс точности, %:" VerticalAlignment="Center" Margin="0,0,8,4"/>
+                <TextBox Grid.Row="0" Grid.Column="1" Name="TbAccuracy" Margin="0,0,8,4"/>
+
+                <TextBlock Grid.Row="1" Grid.Column="0" Text="Предел допустимого значения вариации, %:" VerticalAlignment="Center" Margin="8,0,8,4"/>
+                <TextBox Grid.Row="1" Grid.Column="1" Name="TbVariation" Margin="0,0,8,4"/>
+
+                <TextBlock Grid.Row="2" Grid.Column="0" Text="Определение класса точности поверяемого прибора:" VerticalAlignment="Center" Margin="0,0,8,4"/>
+                <StackPanel Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="3" Orientation="Horizontal" Margin="0,4,0,0">
+                    <RadioButton Name="RbAccMethodStd" Content="±Д" IsChecked="True" GroupName="AccuracyMethod" Margin="0,0,12,0"/>
+                    <RadioButton Name="RbAccMethodConst" Content="±ИВ + Const" GroupName="AccuracyMethod" Margin="0,0,12,0"/>
+                    <RadioButton Name="RbAccMethodRatio" Content="±Д / ±ИВ" GroupName="AccuracyMethod"/>
+                </StackPanel>
+            </Grid>
+        </GroupBox>
+
+        <!-- Кнопки OK / Отмена -->
+        <StackPanel Grid.Row="4" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,12,0,0">
+            <Button Name="BtnOk" Click="EditInstrument" Content="OK" Width="80" Margin="0,0,8,0" IsDefault="True"/>
+            <Button Name="BtnCancel" Content="Отмена" Width="80" IsCancel="True"/>
+        </StackPanel>
+    </Grid>
+
+</Window>

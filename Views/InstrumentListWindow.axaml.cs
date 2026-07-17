@@ -104,5 +104,29 @@ public partial class InstrumentListWindow : Window
 
     }
 
+    private void BtnEditInstrumentClicked(object? sender, RoutedEventArgs e)
+    {
+        var selectedItem = InstrumentsGrid.SelectedItem as InstrumentModel;
+
+        if (selectedItem == null)
+        {
+            StatusText.Text = "Статус: Выберите прибор для удаления";
+            return;
+        }
+        InstrumentModel? instrument = DbHelper.GetInstrumentById(selectedItem.Id);
+        if (instrument == null)
+        {
+            return;
+        }
+
+        var dialog = new  EditInstrumentWindow(selectedItem.Id);
+        dialog.OnSaved += () =>
+        {
+            LoadInstruments();
+        };
+        dialog.ShowDialog(this);
+
+    }
+
 
 }
