@@ -79,6 +79,10 @@ public static class DbHelper
                 Id INTEGER PRIMARY KEY AUTOINCREMENT,
                 Comment TEXT,
                 AuthorId INTEGER,
+                InputEtalonId INTEGER,
+                OutputEtalonId INTEGER,
+                FOREIGN KEY (InputEtalonId) REFERENCES Templates(Id) ON DELETE SET NULL,
+                FOREIGN KEY (OutputEtalonId) REFERENCES Templates(Id) ON DELETE SET NULL,
                 FOREIGN KEY (AuthorId) REFERENCES Inspectors(Id) ON DELETE SET NULL
             );";
 
@@ -100,7 +104,7 @@ public static class DbHelper
 
         const string createProbingTableSql = @"
             CREATE TABLE IF NOT EXISTS Probing (
-                Id                       INTEGER PRIMARY KEY AUTOINCREMENT,
+                
                 VerificationId           INTEGER NOT NULL,
                 InstrumentId             INTEGER NOT NULL,
 
@@ -115,6 +119,8 @@ public static class DbHelper
                 OperabilityComment          TEXT,
                 ZeroSettingFunctionComment  TEXT,
                 TightnessComment            TEXT,
+
+                PRIMARY KEY (VerificationId, InstrumentId),
 
                 FOREIGN KEY (VerificationId) REFERENCES Verification(Id) ON DELETE CASCADE,
                 FOREIGN KEY (InstrumentId)   REFERENCES Instruments(Id)   ON DELETE CASCADE
@@ -394,6 +400,148 @@ public static class DbHelper
 
         return list;
     }
+
+    public static void SetVerificationInputTemplate(int verificationId, int inputEtalonId)
+    {
+        const string sql = @"
+            UPDATE Verification
+            SET InputEtalonId = @InputEtalonId
+            WHERE Id = @VerificationId";
+
+        using var conn = new SqliteConnection(ConnectionString);
+        conn.Open();
+
+        using var cmd = new SqliteCommand(sql, conn);
+
+        cmd.Parameters.AddWithValue("@VerificationId", verificationId);
+        cmd.Parameters.AddWithValue("@InputEtalonId", inputEtalonId);
+            
+          // null корректно запишется как NULL
+
+        cmd.ExecuteNonQuery();
+    }
+
+    public static void SetVerificationOutputTemplate(int verificationId, int outputEtalonId)
+    {
+        const string sql = @"
+            UPDATE Verification
+            SET OutputEtalonId = @OutputEtalonId
+            WHERE Id = @VerificationId";
+
+        using var conn = new SqliteConnection(ConnectionString);
+        conn.Open();
+
+        using var cmd = new SqliteCommand(sql, conn);
+
+        cmd.Parameters.AddWithValue("@VerificationId", verificationId);
+        cmd.Parameters.AddWithValue("@OutputEtalonId", outputEtalonId);
+            
+          // null корректно запишется как NULL
+
+        cmd.ExecuteNonQuery();
+    }
+
+
+
+
+    public static TemplateModel? GetInputTemplateByVerificationId(int verificationId)
+    {
+        Console.WriteLine($"GetInputTemplateByVerificationId {verificationId}");
+        const string sql = @"
+            SELECT t.Id,
+                   t.DeviceType,
+                   t.FullName,
+                   t.SerialNumber,
+                   t.Inaccuracy,
+                   t.InaccuracyMethodCode,
+                   t.CurrentRange,
+                   t.Units,
+                   t.LowerLimit,
+                   t.UpperLimit
+            FROM Verification v
+            LEFT JOIN Templates t ON v.InputEtalonId = t.Id
+            WHERE v.Id = @VerificationId";
+
+        using var conn = new SqliteConnection(ConnectionString);
+        conn.Open();
+
+        using var cmd = new SqliteCommand(sql, conn);
+        cmd.Parameters.AddWithValue("@VerificationId", verificationId);
+
+        using var reader = cmd.ExecuteReader();
+        if (!reader.Read())
+            return null;
+
+        // Если InputEtalonId был NULL, то все поля из Templates будут NULL
+        if (reader.IsDBNull(reader.GetOrdinal("Id")))
+            return null;
+
+        return new TemplateModel
+        {
+            Id = reader.GetInt32(reader.GetOrdinal("Id")),
+            DeviceType = reader.IsDBNull(reader.GetOrdinal("DeviceType")) ? null : reader.GetString(reader.GetOrdinal("DeviceType")),
+            FullName = reader.IsDBNull(reader.GetOrdinal("FullName")) ? null : reader.GetString(reader.GetOrdinal("FullName")),
+            SerialNumber = reader.IsDBNull(reader.GetOrdinal("SerialNumber")) ? null : reader.GetString(reader.GetOrdinal("SerialNumber")),
+            Inaccuracy = reader.IsDBNull(reader.GetOrdinal("Inaccuracy")) ? null : reader.GetDouble(reader.GetOrdinal("Inaccuracy")),
+            InaccuracyMethodCode = reader.IsDBNull(reader.GetOrdinal("InaccuracyMethodCode")) 
+                ? 0 
+                : reader.GetInt32(reader.GetOrdinal("InaccuracyMethodCode")),
+            CurrentRange = reader.IsDBNull(reader.GetOrdinal("CurrentRange")) ? null : reader.GetString(reader.GetOrdinal("CurrentRange")),
+            Units = reader.IsDBNull(reader.GetOrdinal("Units")) ? null : reader.GetString(reader.GetOrdinal("Units")),
+            LowerLimit = reader.IsDBNull(reader.GetOrdinal("LowerLimit")) ? null : reader.GetDouble(reader.GetOrdinal("LowerLimit")),
+            UpperLimit = reader.IsDBNull(reader.GetOrdinal("UpperLimit")) ? null : reader.GetDouble(reader.GetOrdinal("UpperLimit"))
+        };
+    }
+
+    public static TemplateModel? GetOutputTemplateByVerificationId(int verificationId)
+    {
+        Console.WriteLine($"GetInputTemplateByVerificationId {verificationId}");
+        const string sql = @"
+            SELECT t.Id,
+                   t.DeviceType,
+                   t.FullName,
+                   t.SerialNumber,
+                   t.Inaccuracy,
+                   t.InaccuracyMethodCode,
+                   t.CurrentRange,
+                   t.Units,
+                   t.LowerLimit,
+                   t.UpperLimit
+            FROM Verification v
+            LEFT JOIN Templates t ON v.OutputEtalonId = t.Id
+            WHERE v.Id = @VerificationId";
+
+        using var conn = new SqliteConnection(ConnectionString);
+        conn.Open();
+
+        using var cmd = new SqliteCommand(sql, conn);
+        cmd.Parameters.AddWithValue("@VerificationId", verificationId);
+
+        using var reader = cmd.ExecuteReader();
+        if (!reader.Read())
+            return null;
+
+        // Если InputEtalonId был NULL, то все поля из Templates будут NULL
+        if (reader.IsDBNull(reader.GetOrdinal("Id")))
+            return null;
+
+        return new TemplateModel
+        {
+            Id = reader.GetInt32(reader.GetOrdinal("Id")),
+            DeviceType = reader.IsDBNull(reader.GetOrdinal("DeviceType")) ? null : reader.GetString(reader.GetOrdinal("DeviceType")),
+            FullName = reader.IsDBNull(reader.GetOrdinal("FullName")) ? null : reader.GetString(reader.GetOrdinal("FullName")),
+            SerialNumber = reader.IsDBNull(reader.GetOrdinal("SerialNumber")) ? null : reader.GetString(reader.GetOrdinal("SerialNumber")),
+            Inaccuracy = reader.IsDBNull(reader.GetOrdinal("Inaccuracy")) ? null : reader.GetDouble(reader.GetOrdinal("Inaccuracy")),
+            InaccuracyMethodCode = reader.IsDBNull(reader.GetOrdinal("InaccuracyMethodCode")) 
+                ? 0 
+                : reader.GetInt32(reader.GetOrdinal("InaccuracyMethodCode")),
+            CurrentRange = reader.IsDBNull(reader.GetOrdinal("CurrentRange")) ? null : reader.GetString(reader.GetOrdinal("CurrentRange")),
+            Units = reader.IsDBNull(reader.GetOrdinal("Units")) ? null : reader.GetString(reader.GetOrdinal("Units")),
+            LowerLimit = reader.IsDBNull(reader.GetOrdinal("LowerLimit")) ? null : reader.GetDouble(reader.GetOrdinal("LowerLimit")),
+            UpperLimit = reader.IsDBNull(reader.GetOrdinal("UpperLimit")) ? null : reader.GetDouble(reader.GetOrdinal("UpperLimit"))
+        };
+    }
+
 
     public static InstrumentModel? GetInstrumentById(int id)
     {

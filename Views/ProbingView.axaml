@@ -20,18 +20,18 @@
                       AutoGenerateColumns="False"
                       CanUserResizeColumns="True"
                       CanUserSortColumns="True"
-                      x:DataType="models:InstrumentResultModel" 
+                      x:DataType="models:ProbingModel" 
                       >
                 
                 <DataGrid.Columns>
-                    <DataGridTextColumn Header="Канал" Binding="{Binding Channel}" Width="60" IsReadOnly="True"/>
-                    <DataGridTextColumn Header="Прибор" Binding="{Binding InstrumentName}" Width="150" IsReadOnly="True"/>
-                    <DataGridTextColumn Header="Серийный №" Binding="{Binding SerialNumber}" Width="120" IsReadOnly="True"/>
+                    <DataGridTextColumn Header="Канал" Width="60" IsReadOnly="True"/>
+                    <DataGridTextColumn Header="Прибор"  Width="150" IsReadOnly="True"/>
+                    <DataGridTextColumn Header="Серийный №"  Width="120" IsReadOnly="True"/>
                     
-                    <DataGridCheckBoxColumn Header="Осмотр" Binding="{Binding IsInspected}" Width="70" IsReadOnly="True"/>
-                    <DataGridCheckBoxColumn Header="Работосп-ть" Binding="{Binding IsFunctional}" Width="90" IsReadOnly="True"/>
-                    <DataGridCheckBoxColumn Header="Ноль" Binding="{Binding IsZeroOk}" Width="60" IsReadOnly="True"/>
-                    <DataGridCheckBoxColumn Header="Герметичнос" Binding="{Binding IsSealed}" Width="100" IsReadOnly="True"/>
+                    <DataGridCheckBoxColumn Header="Осмотр" Width="70" IsReadOnly="True"/>
+                    <DataGridCheckBoxColumn Header="Работосп-ть"  Width="90" IsReadOnly="True"/>
+                    <DataGridCheckBoxColumn Header="Ноль"  Width="60" IsReadOnly="True"/>
+                    <DataGridCheckBoxColumn Header="Герметичнос" Width="100" IsReadOnly="True"/>
                 </DataGrid.Columns>
             </DataGrid>
 

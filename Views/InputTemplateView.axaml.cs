@@ -3,16 +3,18 @@ using Avalonia.Interactivity;
 using System;
 using System.Collections.Generic;
 using MyAvaloniaApp.Models;
+using MyAvaloniaApp;
 
 namespace MyAvaloniaApp.Views
 {
     public partial class InputTemplateView : UserControl
     {
-        private readonly Window _ownerWindow;
+        private readonly NewVerificationWindow _ownerWindow;
         public InputTemplateView(Window ownerWindow)
         {
             InitializeComponent();
-            _ownerWindow = ownerWindow;
+            _ownerWindow = (NewVerificationWindow)ownerWindow;
+            LoadInputTemplate();
         }
 
         public async void SelectTemplateClicked(object? sender, RoutedEventArgs e)
@@ -22,10 +24,20 @@ namespace MyAvaloniaApp.Views
             if (dialog.SelectedTemplate != null)
             {
                 TemplateModel template = dialog.SelectedTemplate;
-                Console.WriteLine(template.DeviceType);
+                Console.WriteLine($"SelectTemplateClicked: {template.Id}");
+                DbHelper.SetVerificationInputTemplate(_ownerWindow.VerificationId, template.Id);
                 FillFields(template);
             }
 
+        }
+
+        public void LoadInputTemplate()
+        {
+            TemplateModel? template = DbHelper.GetInputTemplateByVerificationId(_ownerWindow.VerificationId);
+            if(template == null){
+                return;
+            }
+            FillFields(template);
         }
 
         private void FillFields(TemplateModel item)

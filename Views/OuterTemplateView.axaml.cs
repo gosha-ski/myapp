@@ -8,11 +8,12 @@ namespace MyAvaloniaApp.Views
 {
     public partial class OuterTemplateView : UserControl
     {
-        private readonly Window _ownerWindow;
+        private readonly NewVerificationWindow _ownerWindow;
         public OuterTemplateView(Window ownerWindow)
         {
             InitializeComponent();
-            _ownerWindow = ownerWindow;
+            _ownerWindow = (NewVerificationWindow)ownerWindow;
+            LoadOutputTemplate();
         }
 
         public async void SelectTemplateClicked(object? sender, RoutedEventArgs e)
@@ -23,9 +24,19 @@ namespace MyAvaloniaApp.Views
             {
                 TemplateModel template = dialog.SelectedTemplate;
                 Console.WriteLine(template.DeviceType);
+                DbHelper.SetVerificationOutputTemplate(_ownerWindow.VerificationId, template.Id);
                 FillFields(template);
             }
 
+        }
+
+        public void LoadOutputTemplate()
+        {
+            TemplateModel? template = DbHelper.GetOutputTemplateByVerificationId(_ownerWindow.VerificationId);
+            if(template == null){
+                return;
+            }
+            FillFields(template);
         }
 
         public void PrepareOuterTemplateClicked(object? sender, RoutedEventArgs e)

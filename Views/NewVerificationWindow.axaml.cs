@@ -33,7 +33,7 @@ namespace MyAvaloniaApp.Views
             _stepViews.Add(new DevicesView(this));
             _stepViews.Add(new InputTemplateView(this));
             _stepViews.Add(new OuterTemplateView(this));
-            //_stepViews.Add(new ProbingView(this));
+            _stepViews.Add(new ProbingView(this));
             _stepViews.Add(new LoaderRangeView(this));
             _stepViews.Add(new VerificationOperationsView(this));
             
@@ -44,7 +44,7 @@ namespace MyAvaloniaApp.Views
                 "Поверяемые приборы",
                 "Входной эталон",
                 "Выходной эталон",
-                //"Опробация",
+                "Опробация",
                 "Ряд нагружения",
                 "Операции поверки"
             };
