@@ -129,10 +129,256 @@ public static class DbHelper
         using var cmdProbing = new SqliteCommand(createProbingTableSql, conn);
         cmdProbing.ExecuteNonQuery();
 
+        const string createLoaderRangeTableSql = @"
+            CREATE TABLE IF NOT EXISTS LoaderRange (
+                Id                 INTEGER PRIMARY KEY AUTOINCREMENT,
+                VerificationId     INTEGER NOT NULL UNIQUE,
+                Unit               TEXT,
+
+                FOREIGN KEY (VerificationId) REFERENCES Verification(Id) ON DELETE CASCADE
+            );";
+
+        using var cmdLoaderRange = new SqliteCommand(createLoaderRangeTableSql, conn);
+        cmdLoaderRange.ExecuteNonQuery();
+
+
+        const string createLoadingPointsDefaultTableSql = @"
+            CREATE TABLE IF NOT EXISTS LoadingPointsDefault (
+                Id                 INTEGER PRIMARY KEY AUTOINCREMENT,
+                LoaderRangeId      INTEGER NOT NULL,
+                PointIndex         INTEGER NOT NULL,
+                PointValue         REAL NOT NULL,
+
+                FOREIGN KEY (LoaderRangeId) REFERENCES LoaderRange(Id) ON DELETE CASCADE,
+                UNIQUE (LoaderRangeId, PointIndex)
+            );
+            ";
+
+        using var cmdLoadingPointsDefault = new SqliteCommand(createLoadingPointsDefaultTableSql, conn);
+        cmdLoadingPointsDefault.ExecuteNonQuery();
+
+        const string createLoadingPointsTableSql = @"
+            CREATE TABLE IF NOT EXISTS LoadingPoints (
+                Id                 INTEGER PRIMARY KEY AUTOINCREMENT,
+                DefaultPointId      INTEGER NOT NULL,
+                InstrumentId         INTEGER NOT NULL,
+       
+                
+                TemplateValue      REAL,
+                CalcValue          REAL,
+                InstrumentValue    REAL,
+                Error              REAL,
+                Variation          REAL,
+                Approved           INTEGER NOT NULL DEFAULT 0,  -- 0 = не утверждено, 1 = утверждено
+
+                FOREIGN KEY (DefaultPointId) REFERENCES LoadingPointsDefault(Id) ON DELETE CASCADE,
+                FOREIGN KEY (InstrumentId) REFERENCES LoaderRange(Id) ON DELETE CASCADE
+                
+            );
+            ";
+
+        using var cmdLoadingPoints = new SqliteCommand(createLoadingPointsTableSql, conn);
+        cmdLoadingPoints.ExecuteNonQuery();
+
         Console.WriteLine("БД готова!");
     }
 
     public static void Initialize() { /* Пустой метод, нужен только чтобы вызвать статический конструктор */ }
+
+    public static int SaveLoaderRangeForVerification(int verificationId, string unit)
+    {
+        using var conn = new SqliteConnection(ConnectionString);
+        conn.Open();
+        using var transaction = conn.BeginTransaction();
+
+        try
+        {
+            // 1. Удаляем существующий ряд для этой поверки (если есть)
+            using var cmdDelete = conn.CreateCommand();
+            cmdDelete.Transaction = transaction;
+            cmdDelete.CommandText = @"
+                DELETE FROM LoaderRange
+                WHERE VerificationId = @VerificationId";
+            cmdDelete.Parameters.AddWithValue("@VerificationId", verificationId);
+            cmdDelete.ExecuteNonQuery();
+
+            // 2. Вставляем новый ряд
+            using var cmdInsert = conn.CreateCommand();
+            cmdInsert.Transaction = transaction;
+            cmdInsert.CommandText = @"
+                INSERT INTO LoaderRange (VerificationId, Unit)
+                VALUES (@VerificationId, @Unit);
+                SELECT last_insert_rowid();";
+            cmdInsert.Parameters.AddWithValue("@VerificationId", verificationId);
+            cmdInsert.Parameters.AddWithValue("@Unit", unit);
+
+            // Получаем ID только что вставленной строки
+            var result = cmdInsert.ExecuteScalar();
+            int newId = Convert.ToInt32(result);
+
+            transaction.Commit();
+            return newId;
+        }
+        catch
+        {
+            transaction.Rollback();
+            throw;
+        }
+    }
+
+
+    public static void AddLoadingPointDefault(int loaderRangeId, int pointIndex, double pointValue)
+    {
+        using var conn = new SqliteConnection(ConnectionString);
+        conn.Open();
+
+        const string sql = @"
+            INSERT INTO LoadingPointsDefault (
+                LoaderRangeId, 
+                PointIndex, 
+                PointValue
+            ) VALUES (
+                @LoaderRangeId, 
+                @PointIndex, 
+                @PointValue
+            )";
+
+        using var cmd = conn.CreateCommand();
+        cmd.CommandText = sql;
+
+        // Добавляем параметры
+        cmd.Parameters.AddWithValue("@LoaderRangeId", loaderRangeId);
+        cmd.Parameters.AddWithValue("@PointIndex", pointIndex);
+        cmd.Parameters.AddWithValue("@PointValue", pointValue);
+
+        cmd.ExecuteNonQuery();
+    }
+
+
+    public static void AddLoadingPoint(
+        int defaultPointId, 
+        int instrumentId,
+  
+        double? templateValue, 
+        double? calcValue, 
+        double? instrumentValue, 
+        double? error, 
+        double? variation,
+        bool approved)
+    {
+        using var conn = new SqliteConnection(ConnectionString);
+        conn.Open();
+
+        const string sql = @"
+            INSERT INTO LoadingPoints (
+                DefaultPointId, 
+                InstrumentId, 
+              
+                TemplateValue, 
+                CalcValue, 
+                InstrumentValue, 
+                Error, 
+                Variation,
+                Approved
+            ) VALUES (
+                @DefaultPointId, 
+                @InstrumentId, 
+              
+                @TemplateValue, 
+                @CalcValue, 
+                @InstrumentValue, 
+                @Error, 
+                @Variation,
+                @Approved
+            )";
+
+        using var cmd = conn.CreateCommand();
+        cmd.CommandText = sql;
+
+        cmd.Parameters.AddWithValue("@DefaultPointId", defaultPointId);
+        cmd.Parameters.AddWithValue("@InstrumentId", instrumentId);
+     
+        
+        cmd.Parameters.AddWithValue("@TemplateValue", (object?)templateValue ?? DBNull.Value);
+        cmd.Parameters.AddWithValue("@CalcValue", (object?)calcValue ?? DBNull.Value);
+        cmd.Parameters.AddWithValue("@InstrumentValue", (object?)instrumentValue ?? DBNull.Value);
+        cmd.Parameters.AddWithValue("@Error", (object?)error ?? DBNull.Value);
+        cmd.Parameters.AddWithValue("@Variation", (object?)variation ?? DBNull.Value);
+
+        // SQLite хранит bool как 0/1
+        cmd.Parameters.AddWithValue("@Approved", approved ? 1 : 0);
+
+        cmd.ExecuteNonQuery();
+    }
+
+    public static List<LoadingPointDefaultModel> GetLoadingPointsByVerificationId(int verificationId)
+    {
+        var result = new List<LoadingPointDefaultModel>();
+
+        using var conn = new SqliteConnection(ConnectionString);
+        conn.Open();
+
+        // JOIN: LoaderRange (по VerificationId) -> LoadingPointsDefault
+        const string sql = @"
+            SELECT 
+                lp.Id,
+                lp.LoaderRangeId,
+                lp.PointIndex,
+                lp.PointValue
+            FROM LoadingPointsDefault AS lp
+            JOIN LoaderRange AS lr ON lp.LoaderRangeId = lr.Id
+            WHERE lr.VerificationId = @VerificationId
+            ORDER BY lp.PointIndex";
+
+        using var cmd = conn.CreateCommand();
+        cmd.CommandText = sql;
+        cmd.Parameters.AddWithValue("@VerificationId", verificationId);
+
+        using var reader = cmd.ExecuteReader();
+        while (reader.Read())
+        {
+            result.Add(new LoadingPointDefaultModel
+            {
+                Id = reader.GetInt32(reader.GetOrdinal("Id")),
+                LoaderRangeId = reader.GetInt32(reader.GetOrdinal("LoaderRangeId")),
+                PointIndex = reader.GetInt32(reader.GetOrdinal("PointIndex")),
+                PointValue = reader.GetDouble(reader.GetOrdinal("PointValue"))
+            });
+        }
+
+        return result;
+    }
+
+
+
+
+    public static void SetInstrumentChannel(int verificationId, int instrumentId, int? channel)
+    {
+        using var conn = new SqliteConnection(ConnectionString);
+        conn.Open();
+
+        const string sql = @"
+            INSERT OR REPLACE INTO VerificationInstrument (
+                VerificationId, 
+                InstrumentId, 
+                Channel
+            ) VALUES (
+                @VerificationId, 
+                @InstrumentId, 
+                @Channel
+            )";
+
+        using var cmd = conn.CreateCommand();
+        cmd.CommandText = sql;
+
+        cmd.Parameters.AddWithValue("@VerificationId", verificationId);
+        cmd.Parameters.AddWithValue("@InstrumentId", instrumentId);
+
+        // Если channel == null, запишется NULL (для SQLite это корректно)
+        cmd.Parameters.AddWithValue("@Channel", (object?)channel ?? DBNull.Value);
+
+        cmd.ExecuteNonQuery();
+    }
 
     public static int SaveVerification(string? comment)
     {

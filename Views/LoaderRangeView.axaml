@@ -13,11 +13,11 @@
                 <!-- DataGrid для точек -->
                 <DataGrid x:Name="PointsGrid"
                           AutoGenerateColumns="False"
-                          x:DataType="models:LoadingPointModel" 
+                          x:DataType="models:LoadingPointDefaultModel" 
                           SelectionMode="Single">
                     <DataGrid.Columns>
-                        <DataGridTextColumn Binding="{Binding Index}"  Header="№ точки" IsReadOnly="True" Width="60"/>
-                        <DataGridTextColumn Binding="{Binding Value}" Header="Значение точки, МПа" Width="*"/>
+                        <DataGridTextColumn Binding="{Binding PointIndex}"  Header="№ точки" IsReadOnly="True" Width="60"/>
+                        <DataGridTextColumn Binding="{Binding PointValue}" Header="Значение точки, МПа" Width="*"/>
                     </DataGrid.Columns>
                 </DataGrid>
 

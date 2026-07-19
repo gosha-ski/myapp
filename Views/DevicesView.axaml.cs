@@ -52,9 +52,12 @@ namespace MyAvaloniaApp.Views
             Console.WriteLine("1234");
         }
 
-        private void OnSetChannelClick(object? sender, RoutedEventArgs e)
+        private async void OnSetChannelClick(object? sender, RoutedEventArgs e)
         {
-            // Логика установки номера канала (можно добавить диалог ввода)
+            var selectedItem = SelectedInstrumentsGrid.SelectedItem as InstrumentModel;
+            Console.WriteLine($"{selectedItem.Id}");
+            var dialog = new SetChannelWindow(_ownerWindow.VerificationId, selectedItem.Id);
+            await dialog.ShowDialog(_ownerWindow);
         }
 
         

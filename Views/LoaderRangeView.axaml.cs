@@ -1,5 +1,6 @@
 using System;
 using System.Collections.ObjectModel;
+using System.Collections.Generic;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
@@ -13,15 +14,22 @@ namespace MyAvaloniaApp.Views
     {
         
         // Коллекция точек (хранит пары: индекс, значение)
-        private readonly ObservableCollection<LoadingPointModel> _points = new();
-        private readonly Window _ownerWindow;
+        private readonly ObservableCollection<LoadingPointDefaultModel> _points = new();
+        private readonly NewVerificationWindow _ownerWindow;
 
 
         public LoaderRangeView(Window ownerWindow)
         {
             InitializeComponent();
+            _ownerWindow = (NewVerificationWindow)ownerWindow;
             InitializeLogic();
-            _ownerWindow = ownerWindow;
+            LoadRangeData();
+        }
+
+        private void LoadRangeData()
+        {
+            List<LoadingPointDefaultModel> data = DbHelper.GetLoadingPointsByVerificationId(_ownerWindow.VerificationId);
+            PointsGrid.ItemsSource = data;
         }
 
         private void InitializeLogic()
@@ -68,10 +76,16 @@ namespace MyAvaloniaApp.Views
 
                 _points.Clear();
                 double delta = (dialog.Result.End - dialog.Result.Start) / (dialog.Result.Count-1);
+                int rangeId = DbHelper.SaveLoaderRangeForVerification(_ownerWindow.VerificationId, "МПа");
                 for(int i=0; i<dialog.Result.Count; i++){
                     double val = dialog.Result.Start + delta * i;
                     double rounded = Math.Round(val, 3);
-                    _points.Add(new LoadingPointModel(i+1, rounded));
+                    LoadingPointDefaultModel point = new LoadingPointDefaultModel();
+                    point.LoaderRangeId = rangeId;
+                    point.PointIndex = i + 1;
+                    point.PointValue = rounded;
+                    DbHelper.AddLoadingPointDefault(point.LoaderRangeId, point.PointIndex, point.PointValue);
+                    _points.Add(point);
                 }
                 PointsGrid.ItemsSource = _points;
             }
