@@ -62,11 +62,12 @@ namespace MyAvaloniaApp.Views
 
             _currentIndex = index;
             StepContent.Content = _stepViews[index];
-            //if (index == 4 )
-            //{
-            //    ProbingView step = _stepViews[index] as ProbingView;
-            //    step.InitializeWithInstruments();
-            //}
+            if (index == 6 )
+            {  
+                Console.WriteLine("455");
+                VerificationOperationsView step = _stepViews[index] as VerificationOperationsView;
+                step.LoadInstruments();
+            }
 
             // Синхронизируем выделение в дереве (чтобы галочка тоже прыгнула)
             var names = StepsTree.ItemsSource?.Cast<string>().ToList();

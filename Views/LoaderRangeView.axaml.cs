@@ -84,9 +84,20 @@ namespace MyAvaloniaApp.Views
                     point.LoaderRangeId = rangeId;
                     point.PointIndex = i + 1;
                     point.PointValue = rounded;
-                    DbHelper.AddLoadingPointDefault(point.LoaderRangeId, point.PointIndex, point.PointValue);
+                    int loadingpointId = DbHelper.AddLoadingPointDefault(point.LoaderRangeId, point.PointIndex, point.PointValue);
                     _points.Add(point);
                 }
+
+                List<InstrumentModel> instruments = DbHelper.GetInstrumentsByVerificationId(_ownerWindow.VerificationId);
+                List<LoadingPointDefaultModel> loadPoints = DbHelper.GetLoadingPointsByVerificationId(_ownerWindow.VerificationId);
+
+                foreach(var item in instruments){
+                    foreach(var point in loadPoints){
+                        //Console.WriteLine($"INSTRUMENTId:{item.Id} defaultPointId:{point.Id}");
+                        DbHelper.AddLoadingPoint(point.Id, item.Id, null, null, null, null, null, false);
+                    }
+                }
+
                 PointsGrid.ItemsSource = _points;
             }
             

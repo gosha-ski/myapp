@@ -4,6 +4,8 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using MyAvaloniaApp.Models;
+using System.Collections.Generic;
+using System;
 
 namespace MyAvaloniaApp.Views
 {
@@ -17,14 +19,26 @@ namespace MyAvaloniaApp.Views
         public VerificationOperationsView(Window ownerWindow)
         {
             InitializeComponent();
-            InitializeSampleData();
-
             _ownerWindow = (NewVerificationWindow)ownerWindow;
 
-            DgDevices.ItemsSource = Instruments;
+            Console.WriteLine("VerificationOperationsView PFPFFPFPFP");
+
+            //InitializeSampleData();
+            //LoadInstruments();
+
+            //DgDevices.ItemsSource = Instruments;
             //DgProcessData.ItemsSource = ProcessData;
 
             DgDevices.SelectionChanged += OnDeviceSelectionChanged;
+        }
+
+        public void LoadInstruments()
+        {
+            List<InstrumentModel> instruments = DbHelper.GetInstrumentsByVerificationId(_ownerWindow.VerificationId);
+            if(instruments !=null){
+                DgDevices.ItemsSource = instruments;
+            }
+            return;
         }
 
         private void InitializeSampleData()

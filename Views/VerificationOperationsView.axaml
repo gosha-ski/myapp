@@ -1,16 +1,22 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:models="using:MyAvaloniaApp.Models"
              x:Class="MyAvaloniaApp.Views.VerificationOperationsView"
              Margin="10">
 
     <Grid RowDefinitions="Auto,*" ColumnDefinitions="*,Auto">
         <!-- Левая верхняя часть: список приборов -->
         <GroupBox Grid.Row="0" Grid.Column="0" Header="Список приборов, участвующих в поверке" Margin="0,0,10,10">
-            <DataGrid x:Name="DgDevices" AutoGenerateColumns="False"  SelectionMode="Single">
+            <DataGrid 
+                x:Name="DgDevices" 
+                AutoGenerateColumns="False"  
+                SelectionMode="Single"
+                x:DataType="models:InstrumentModel" 
+                >
                 <DataGrid.Columns>
-                    <DataGridTextColumn Header="Канал"  Width="60"/>
-                    <DataGridTextColumn Header="Модель"  Width="*"/>
-                    <DataGridTextColumn Header="Серийный №"  Width="150"/>
+                    <DataGridTextColumn Header="Канал" Binding="{Binding TypeCode}" Width="60"/>
+                    <DataGridTextColumn Header="Модель" Binding="{Binding Model}" Width="*"/>
+                    <DataGridTextColumn Header="Серийный №" Binding="{Binding SerialNumber}"  Width="150"/>
                 </DataGrid.Columns>
             </DataGrid>
         </GroupBox>

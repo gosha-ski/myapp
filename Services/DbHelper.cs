@@ -156,6 +156,8 @@ public static class DbHelper
 
         using var cmdLoadingPointsDefault = new SqliteCommand(createLoadingPointsDefaultTableSql, conn);
         cmdLoadingPointsDefault.ExecuteNonQuery();
+        //FOREIGN KEY (InstrumentId) REFERENCES Instruments(Id) ON DELETE CASCADE
+        //FOREIGN KEY (DefaultPointId) REFERENCES LoadingPointsDefault(Id) ON DELETE CASCADE
 
         const string createLoadingPointsTableSql = @"
             CREATE TABLE IF NOT EXISTS LoadingPoints (
@@ -172,8 +174,7 @@ public static class DbHelper
                 Approved           INTEGER NOT NULL DEFAULT 0,  -- 0 = не утверждено, 1 = утверждено
 
                 FOREIGN KEY (DefaultPointId) REFERENCES LoadingPointsDefault(Id) ON DELETE CASCADE,
-                FOREIGN KEY (InstrumentId) REFERENCES LoaderRange(Id) ON DELETE CASCADE
-                
+                FOREIGN KEY (InstrumentId) REFERENCES Instruments(Id) ON DELETE CASCADE                  
             );
             ";
 
@@ -227,7 +228,7 @@ public static class DbHelper
     }
 
 
-    public static void AddLoadingPointDefault(int loaderRangeId, int pointIndex, double pointValue)
+    public static int AddLoadingPointDefault(int loaderRangeId, int pointIndex, double pointValue)
     {
         using var conn = new SqliteConnection(ConnectionString);
         conn.Open();
@@ -241,17 +242,19 @@ public static class DbHelper
                 @LoaderRangeId, 
                 @PointIndex, 
                 @PointValue
-            )";
+            );
+            SELECT last_insert_rowid();";
 
         using var cmd = conn.CreateCommand();
         cmd.CommandText = sql;
 
-        // Добавляем параметры
         cmd.Parameters.AddWithValue("@LoaderRangeId", loaderRangeId);
         cmd.Parameters.AddWithValue("@PointIndex", pointIndex);
         cmd.Parameters.AddWithValue("@PointValue", pointValue);
 
-        cmd.ExecuteNonQuery();
+        // ExecuteScalar вернёт значение из SELECT last_insert_rowid()
+        var result = cmd.ExecuteScalar();
+        return Convert.ToInt32(result);
     }
 
 
