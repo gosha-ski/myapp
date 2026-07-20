@@ -568,6 +568,7 @@ public static class DbHelper
 
 
 
+
     public static void SaveTemplate(TemplateModel template)
     {
         using var conn = new SqliteConnection(ConnectionString);
@@ -594,6 +595,24 @@ public static class DbHelper
 
         cmd.ExecuteNonQuery();
 
+    }
+
+    public static void DeleteTemplate(int templateId)
+    {
+        const string sql = "DELETE FROM Templates WHERE Id = @Id";
+
+        using var connection = new SqliteConnection(ConnectionString);
+        connection.Open();
+
+        using var pragmaCmd = connection.CreateCommand();
+        pragmaCmd.CommandText = "PRAGMA foreign_keys = ON";
+        pragmaCmd.ExecuteNonQuery();
+
+        using var command = connection.CreateCommand();
+        command.CommandText = sql;
+        command.Parameters.AddWithValue("@Id", templateId);
+
+        command.ExecuteNonQuery();
     }
 
     public static List<TemplateModel> GetAllTemplates()

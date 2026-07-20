@@ -51,7 +51,7 @@
                     Margin="0,2" Click="BtnAddTemplateClicked"/>
             <Button Content="Редактировать эталон"
                     Margin="0,2"/>
-            <Button Content="Удалить эталон"
+            <Button Content="Удалить эталон" Click="BtnDeleteTemplateClicked"
                     Margin="0,2"/>
         </StackPanel>
 

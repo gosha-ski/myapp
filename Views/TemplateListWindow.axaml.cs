@@ -29,6 +29,13 @@ public partial class TemplateListWindow : Window
         dialog.ShowDialog(this);
     }
 
+    public void BtnDeleteTemplateClicked(object? sender, RoutedEventArgs e)
+    {
+        TemplateModel template = TemplateDataGrid.SelectedItem as TemplateModel;
+        DbHelper.DeleteTemplate(template.Id);
+        LoadTemplates();
+    }
+
     public void LoadTemplates()
     {
         List<TemplateModel> templates = DbHelper.GetAllTemplates();

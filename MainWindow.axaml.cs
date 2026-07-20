@@ -49,7 +49,8 @@ public partial class MainWindow : Window
     {
         int verificationId = DbHelper.SaveVerification("example");
         var dialog = new NewVerificationWindow(verificationId);
-        dialog.ShowDialog(this);   
+        dialog.ShowDialog(this);
+        LoadVerifications();
     }
 
     public void BtnContinueVerificationClicked(object? sender, RoutedEventArgs e)
@@ -60,6 +61,14 @@ public partial class MainWindow : Window
   
         var dialog = new NewVerificationWindow(verificationId);
         dialog.ShowDialog(this);
+    }
+
+    public void BtnDeleteVerificationClicked(object? sender, RoutedEventArgs e)
+    {
+        var selectedItem = VerificationsGrid.SelectedItem as VerificationModel;
+        int verificationId = selectedItem.Id;
+
+
     }
 
 
