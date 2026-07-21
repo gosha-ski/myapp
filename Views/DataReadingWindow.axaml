@@ -1,0 +1,59 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="MyAvaloniaApp.Views.DataReadingWindow"
+        Title="Поверка приборов"
+        Width="1200" Height="800">
+
+    <Grid RowDefinitions="Auto,*,Auto" ColumnDefinitions="180,*" Margin="8">
+        
+        <!-- Левая панель: только один канал -->
+        <StackPanel Grid.Column="0" Grid.Row="1" VerticalAlignment="Top" Margin="0,8,8,0">
+            <TextBlock Text="Показания поверяемых приборов, мА" FontWeight="Bold" Margin="0,0,0,4"/>
+            <Border Background="#222" Padding="8,4" CornerRadius="4">
+                <TextBlock Text="Канал 1" Foreground="White" VerticalAlignment="Center"/>
+            </Border>
+        </StackPanel>
+
+        <!-- Основная область: верх (эталон) + таблица + низ -->
+        <Grid Grid.Column="1" Grid.Row="1" RowDefinitions="Auto,*,Auto">
+            
+            <!-- Верхняя панель: только показания входного эталона -->
+            <Border Grid.Row="0" Padding="8" BorderBrush="#ccc" BorderThickness="1" CornerRadius="4" Margin="0,0,0,8">
+                <StackPanel Orientation="Horizontal">
+                    <StackPanel>
+                        <TextBlock Text="Показания входного эталона, МПа" FontWeight="Bold" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                        <TextBox x:Name="InputReferenceValueBox" Width="100" Text="0.00" VerticalAlignment="Center"/>
+
+                        <TextBlock Text="Показания выходного эталона, МПа" FontWeight="Bold" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                        <TextBox x:Name="OutputReferenceValueBox" Width="100" Text="0.00" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
+            <!-- Центральная таблица: точки поверки -->
+            <DataGrid 
+                x:Name="CalibrationPointsGrid" 
+                Grid.Row="1" AutoGenerateColumns="False" 
+                Margin="0,0,0,8">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Номер"  Width="120"/>
+                    <DataGridTextColumn Header="Точка, МПа"  Width="120"/>
+                    <DataGridTextColumn Header="Эталон, МПа"  Width="120"/>
+                    <DataGridTextColumn Header="Расч., мА"  Width="130"/>
+                    <DataGridTextColumn Header="Прибор, мА"  Width="130"/>
+                    <DataGridTextColumn Header="Ошибка, мА" Width="130"/>
+                    <DataGridTextColumn Header="Вариация, мА"  Width="130"/>
+                    <DataGridCheckBoxColumn Header="OK" Width="130"/>
+                </DataGrid.Columns>
+            </DataGrid>
+
+            <!-- Нижняя панель: кнопки действий -->
+            <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,8,0,0">
+                <Button Content="Зафиксировать точку" Margin="0,0,8,0"/>
+                <Button Content="Прерывание" Margin="0,0,8,0"/>
+                <Button Content="Выход"/>
+            </StackPanel>
+
+        </Grid>
+    </Grid>
+</Window>

@@ -20,6 +20,7 @@ namespace MyAvaloniaApp.Views
         {
             InitializeComponent();
             _ownerWindow = (NewVerificationWindow)ownerWindow;
+            BtnStartReading.Click += BtnStartReadingClicked;
 
             Console.WriteLine("VerificationOperationsView PFPFFPFPFP");
 
@@ -51,6 +52,17 @@ namespace MyAvaloniaApp.Views
         {
             // Здесь можно подгружать данные процесса для выбранного прибора
             // Например, по Channel или SerialNumber
+        }
+
+        public void BtnStartReadingClicked(object? sender, RoutedEventArgs e)
+        {
+            var selectedInstrument = DgDevices.SelectedItem as InstrumentModel;
+            if(selectedInstrument != null)
+            {
+                var dialog = new DataReadingWindow(_ownerWindow, selectedInstrument.Id);
+                dialog.ShowDialog(_ownerWindow);
+            }
+            
         }
     }
 

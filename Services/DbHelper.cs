@@ -314,6 +314,78 @@ public static class DbHelper
         cmd.ExecuteNonQuery();
     }
 
+    public static List<CalibrationPointModel> GetLoadingPointsByVerificationAndInstrument(
+            int verificationId,
+            int instrumentId)
+    {
+        var points = new List<CalibrationPointModel>();
+
+        const string sql = @"
+                SELECT
+                    lp.Id AS LoadingPointId,
+                    lpd.PointIndex,
+                    lpd.PointValue AS PointValueMpa,
+                    lp.TemplateValue,
+                    lp.CalcValue,
+                    lp.InstrumentValue,
+                    lp.Error,
+                    lp.Variation,
+                    lp.Approved
+                FROM LoadingPoints AS lp
+                JOIN LoadingPointsDefault AS lpd ON lp.DefaultPointId = lpd.Id
+                JOIN LoaderRange AS lr ON lpd.LoaderRangeId = lr.Id
+                WHERE lr.VerificationId = @VerificationId
+                  AND lp.InstrumentId = @InstrumentId
+                ORDER BY lpd.PointIndex;
+            ";
+
+        using var connection = new SqliteConnection(ConnectionString);
+        connection.Open();
+
+        using var command = new SqliteCommand(sql, connection);
+        command.Parameters.AddWithValue("@VerificationId", verificationId);
+        command.Parameters.AddWithValue("@InstrumentId", instrumentId);
+
+        using var reader = command.ExecuteReader();
+
+        // Получаем индексы колонок один раз для скорости
+        int colLoadingPointId = reader.GetOrdinal("LoadingPointId");
+        int colPointIndex = reader.GetOrdinal("PointIndex");
+        int colPointValueMpa = reader.GetOrdinal("PointValueMpa");
+        int colTemplateValue = reader.GetOrdinal("TemplateValue");
+        int colCalcValue = reader.GetOrdinal("CalcValue");
+        int colInstrumentValue = reader.GetOrdinal("InstrumentValue");
+        int colError = reader.GetOrdinal("Error");
+        int colVariation = reader.GetOrdinal("Variation");
+        int colApproved = reader.GetOrdinal("Approved");
+
+        while (reader.Read())
+        {
+            // Читаем nullable double напрямую с проверкой IsDBNull
+            double? templateValue = reader.IsDBNull(colTemplateValue) ? null : reader.GetDouble(colTemplateValue);
+            double? calcValue = reader.IsDBNull(colCalcValue) ? null : reader.GetDouble(colCalcValue);
+            double? instrumentValue = reader.IsDBNull(colInstrumentValue) ? null : reader.GetDouble(colInstrumentValue);
+            double? error = reader.IsDBNull(colError) ? null : reader.GetDouble(colError);
+            double? variation = reader.IsDBNull(colVariation) ? null : reader.GetDouble(colVariation);
+
+            points.Add(new CalibrationPointModel
+            {
+                LoadingPointId = reader.GetInt32(colLoadingPointId),
+                PointIndex = reader.GetInt32(colPointIndex),
+                PointValueMpa = reader.GetDouble(colPointValueMpa),
+
+                TemplateValue = templateValue,
+                CalcValue = calcValue,
+                InstrumentValue = instrumentValue,
+                Error = error,
+                Variation = variation,
+                Approved = reader.GetInt32(colApproved) == 1
+            });
+        }
+
+        return points;
+    }
+
     public static List<LoadingPointDefaultModel> GetLoadingPointsByVerificationId(int verificationId)
     {
         var result = new List<LoadingPointDefaultModel>();
