@@ -1,5 +1,7 @@
 using System;
 
+namespace MyAvaloniaApp.Models;
+
 public class CalibrationPointModel
 {
     public int LoadingPointId { get; set; }      // Id из LoadingPoints (для UPDATE)

@@ -1,5 +1,6 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:models="using:MyAvaloniaApp.Models"
         x:Class="MyAvaloniaApp.Views.DataReadingWindow"
         Title="Поверка приборов"
         Width="1200" Height="800">
@@ -22,10 +23,10 @@
                 <StackPanel Orientation="Horizontal">
                     <StackPanel>
                         <TextBlock Text="Показания входного эталона, МПа" FontWeight="Bold" VerticalAlignment="Center" Margin="0,0,8,0"/>
-                        <TextBox x:Name="InputReferenceValueBox" Width="100" Text="0.00" VerticalAlignment="Center"/>
+                        <TextBox x:Name="InputTemplateValueBox" Width="100" Text="0.00" VerticalAlignment="Center"/>
 
-                        <TextBlock Text="Показания выходного эталона, МПа" FontWeight="Bold" VerticalAlignment="Center" Margin="0,0,8,0"/>
-                        <TextBox x:Name="OutputReferenceValueBox" Width="100" Text="0.00" VerticalAlignment="Center"/>
+                        <TextBlock Text="Показания выходного эталона, мА" FontWeight="Bold" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                        <TextBox x:Name="OutputTemplateValueBox" Width="100" Text="0.00" VerticalAlignment="Center"/>
                     </StackPanel>
                 </StackPanel>
             </Border>
@@ -34,22 +35,23 @@
             <DataGrid 
                 x:Name="CalibrationPointsGrid" 
                 Grid.Row="1" AutoGenerateColumns="False" 
-                Margin="0,0,0,8">
+                Margin="0,0,0,8"
+                 x:DataType="models:CalibrationPointModel"  >
                 <DataGrid.Columns>
-                    <DataGridTextColumn Header="Номер"  Width="120"/>
-                    <DataGridTextColumn Header="Точка, МПа"  Width="120"/>
-                    <DataGridTextColumn Header="Эталон, МПа"  Width="120"/>
-                    <DataGridTextColumn Header="Расч., мА"  Width="130"/>
-                    <DataGridTextColumn Header="Прибор, мА"  Width="130"/>
-                    <DataGridTextColumn Header="Ошибка, мА" Width="130"/>
-                    <DataGridTextColumn Header="Вариация, мА"  Width="130"/>
+                    <DataGridTextColumn Header="Номер" Binding="{Binding PointIndex}"  Width="120"/>
+                    <DataGridTextColumn Header="Точка, МПа" Binding="{Binding PointValueMpa}"  Width="120"/>
+                    <DataGridTextColumn Header="Эталон, МПа" Binding="{Binding TemplateValue}"  Width="120"/>
+                    <DataGridTextColumn Header="Расч., мА" Binding="{Binding CalcValue}" Width="130"/>
+                    <DataGridTextColumn Header="Прибор, мА" Binding="{Binding InstrumentValue}"  Width="130"/>
+                    <DataGridTextColumn Header="Ошибка, мА" Binding="{Binding Error}" Width="130"/>
+                    <DataGridTextColumn Header="Вариация, мА"  Binding="{Binding Variation}"  Width="130"/>
                     <DataGridCheckBoxColumn Header="OK" Width="130"/>
                 </DataGrid.Columns>
             </DataGrid>
 
             <!-- Нижняя панель: кнопки действий -->
             <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,8,0,0">
-                <Button Content="Зафиксировать точку" Margin="0,0,8,0"/>
+                <Button x:Name="BtnFixPoint" Content="Зафиксировать точку" Margin="0,0,8,0" Click="BtnFixPointClicked"/>
                 <Button Content="Прерывание" Margin="0,0,8,0"/>
                 <Button Content="Выход"/>
             </StackPanel>
