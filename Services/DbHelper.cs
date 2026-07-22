@@ -314,6 +314,34 @@ public static class DbHelper
         cmd.ExecuteNonQuery();
     }
 
+    public static void UpdateLoadingPointValues(
+    int loadingPointId,
+    double? templateValue,
+    double? instrumentValue)
+    {
+        using var conn = new SqliteConnection(ConnectionString);
+        conn.Open();
+
+        const string sql = @"
+        UPDATE LoadingPoints
+        SET TemplateValue = @TemplateValue,
+            InstrumentValue = @InstrumentValue
+        WHERE Id = @LoadingPointId";
+
+        using var cmd = conn.CreateCommand();
+        cmd.CommandText = sql;
+
+        cmd.Parameters.AddWithValue("@LoadingPointId", loadingPointId);
+
+        // Корректная передача nullable double в SQLite: null → DBNull.Value
+        cmd.Parameters.AddWithValue("@TemplateValue", (object?)templateValue ?? DBNull.Value);
+        cmd.Parameters.AddWithValue("@InstrumentValue", (object?)instrumentValue ?? DBNull.Value);
+
+        cmd.ExecuteNonQuery();
+    }
+
+
+
     public static List<CalibrationPointModel> GetLoadingPointsByVerificationAndInstrument(
             int verificationId,
             int instrumentId)

@@ -5,6 +5,7 @@ using System.Linq;
 using MyAvaloniaApp.Models;
 using MyAvaloniaApp;
 using System;
+using System.Threading.Tasks;
 
 namespace MyAvaloniaApp.Views
 {
@@ -14,9 +15,19 @@ namespace MyAvaloniaApp.Views
         private readonly NewVerificationWindow _ownerWindow;
         private int _instrumentId;
 
-        public DataReadingWindow(Window ownerWindow, int instrumentId)
+        private readonly MeasurementService _measurement;
+        private readonly PressureService _pressureService;
+
+        public DataReadingWindow(
+            Window ownerWindow, 
+            int instrumentId, 
+            MeasurementService measurement,
+            PressureService pressureService
+            )
         {
             InitializeComponent();
+            _measurement = measurement;
+            _pressureService = pressureService;
             _ownerWindow = (NewVerificationWindow)ownerWindow;
             _instrumentId = instrumentId;
             InitializeData();
@@ -28,15 +39,30 @@ namespace MyAvaloniaApp.Views
             CalibrationPointsGrid.ItemsSource = points;
         }
 
-        private void BtnFixPointClicked(object? sender, RoutedEventArgs e)
+        private async void BtnFixPointClicked(object? sender, RoutedEventArgs e)
         {
             var selectedItem = CalibrationPointsGrid.SelectedItem as CalibrationPointModel;
             if (selectedItem != null)
             {
                 double InputTemplateValue = Double.Parse(InputTemplateValueBox.Text);
                 double OutputTemplateValue = Double.Parse(OutputTemplateValueBox.Text);
-                Console.WriteLine($"BtnFixPointClicked|| InputTemplateValue: {InputTemplateValue};  OutputTemplateValue: {OutputTemplateValue}");
-                //DbHelper.SetDataByLoadingPointId(someData);
+
+                double? AverageCurrent = await _measurement.ReadAverageAsync(TimeSpan.FromSeconds(2));
+                double? AveragePressure = await _pressureService.RunAsync(TimeSpan.FromSeconds(2));
+
+                //var currentTask = _measurement.ReadAverageAsync(TimeSpan.FromSeconds(5));
+                //var pressureTask = _pressureService.RunAsync(TimeSpan.FromSeconds(5));
+
+                //await Task.WhenAll(currentTask, pressureTask);
+
+                //double? AverageCurrent = await currentTask;
+                //double? AveragePressure = await pressureTask;
+                Console.WriteLine(
+                    $"BtnFixPointClicked|| InputTemplateValue: {InputTemplateValue};  " +
+                    $"OutputTemplateValue: {OutputTemplateValue} current: {AverageCurrent ?? null}, pressure:{AveragePressure}"
+                    );
+                DbHelper.UpdateLoadingPointValues(selectedItem.LoadingPointId, AveragePressure, AverageCurrent );
+                InitializeData();
             }
 
         }

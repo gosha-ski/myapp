@@ -6,6 +6,8 @@ using System.Runtime.CompilerServices;
 using MyAvaloniaApp.Models;
 using System.Collections.Generic;
 using System;
+using MyAvaloniaApp;
+using Autofac;
 
 namespace MyAvaloniaApp.Views
 {
@@ -58,8 +60,13 @@ namespace MyAvaloniaApp.Views
         {
             var selectedInstrument = DgDevices.SelectedItem as InstrumentModel;
             if(selectedInstrument != null)
-            {
-                var dialog = new DataReadingWindow(_ownerWindow, selectedInstrument.Id);
+            {   
+                var dialog = new DataReadingWindow(
+                    _ownerWindow, 
+                    selectedInstrument.Id, 
+                    Bootstrapper.Container.Resolve<MeasurementService>(),
+                    Bootstrapper.Container.Resolve<PressureService>()
+                    );
                 dialog.ShowDialog(_ownerWindow);
             }
             

@@ -11,6 +11,7 @@ class Program
     [STAThread]
     public static void Main(string[] args) {
         DbHelper.Initialize();
+        Bootstrapper.Build();
         BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
     }
 

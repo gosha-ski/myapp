@@ -10,8 +10,11 @@ namespace MyAvaloniaApp;
 
 public partial class MainWindow : Window
 {
-    public MainWindow()
+    //private readonly MeasurementService _measurement;
+
+    public MainWindow(MeasurementService measurement)
     {
+        
         InitializeComponent();
         LoadVerifications();
 
