@@ -44,11 +44,18 @@ namespace MyAvaloniaApp.Views
             var selectedItem = CalibrationPointsGrid.SelectedItem as CalibrationPointModel;
             if (selectedItem != null)
             {
-                double InputTemplateValue = Double.Parse(InputTemplateValueBox.Text);
-                double OutputTemplateValue = Double.Parse(OutputTemplateValueBox.Text);
+                //double InputTemplateValue = Double.Parse(InputTemplateValueBox?.Text ?? "0") ;
+                //double OutputTemplateValue = Double.Parse(OutputTemplateValueBox?.Text ?? "0");
 
-                double? AverageCurrent = await _measurement.ReadAverageAsync(TimeSpan.FromSeconds(2));
-                double? AveragePressure = await _pressureService.RunAsync(TimeSpan.FromSeconds(2));
+                double InputTemplateValue = 0 ; 
+                double OutputTemplateValue = 0 ;
+
+                //double? AverageCurrent = await _measurement.ReadAverageAsync(TimeSpan.FromSeconds(222));
+                double? AverageCurrent = 0;
+
+                var Result = await _pressureService.RunAsync(TimeSpan.FromSeconds(5));
+
+                //await _pressureService.Unlock();
 
                 //var currentTask = _measurement.ReadAverageAsync(TimeSpan.FromSeconds(5));
                 //var pressureTask = _pressureService.RunAsync(TimeSpan.FromSeconds(5));
@@ -57,11 +64,12 @@ namespace MyAvaloniaApp.Views
 
                 //double? AverageCurrent = await currentTask;
                 //double? AveragePressure = await pressureTask;
+
                 Console.WriteLine(
                     $"BtnFixPointClicked|| InputTemplateValue: {InputTemplateValue};  " +
-                    $"OutputTemplateValue: {OutputTemplateValue} current: {AverageCurrent ?? null}, pressure:{AveragePressure}"
+                    $"OutputTemplateValue: {OutputTemplateValue} current: {Result.Current ?? null}, pressure:{Result.Pressure ?? null}"
                     );
-                DbHelper.UpdateLoadingPointValues(selectedItem.LoadingPointId, AveragePressure, AverageCurrent );
+                DbHelper.UpdateLoadingPointValues(selectedItem.LoadingPointId, Result.Pressure, Result.Current );
                 InitializeData();
             }
 

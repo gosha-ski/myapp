@@ -3,6 +3,7 @@ using LibM520.Driver.Commands.Info;
 using LibM520.Driver.Commands.Modules;
 using LibM520.Driver.HighLevel;
 using LibM520.Driver.MiddleLevel;
+using LibM520.Driver.Commands.IMeas;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -27,6 +28,10 @@ namespace MyAvaloniaApp
         private readonly GetId.Factory _createGetId; // для разблокировки
         private readonly GetSerialNumber.Factory _createGetSerialNumber;
 
+        private readonly Meas.Factory _createMeas;
+
+
+
         public PressureService(
             IMetran520Enumerator enumerator,
             IDriver520 driver,
@@ -35,7 +40,10 @@ namespace MyAvaloniaApp
             GetPressure.Factory createGetPressure,
             Unlock.Factory createUnlock,
             GetSerialNumber.Factory createGetSerialNumber,
-            GetId.Factory createGetId)
+            GetId.Factory createGetId,
+
+
+            Meas.Factory createMeas)
         {
             this._enumerator = enumerator;
             this._driver = driver;
@@ -45,6 +53,10 @@ namespace MyAvaloniaApp
             this._createUnlock = createUnlock;
             this._createGetSerialNumber = createGetSerialNumber;
             this._createGetId = createGetId;
+
+            this._createMeas = createMeas;
+
+            Console.WriteLine($"PressureService driver is open: {_driver.IsOpen}");
 
         }
 
@@ -65,14 +77,16 @@ namespace MyAvaloniaApp
         {
             var infos = await this._enumerator.GetAsync();
             var info = infos.FirstOrDefault();
-
+            Console.WriteLine($"PressureService driver is open: {_driver.IsOpen} in UNLOCK");
             if (info is null)
             {
-                Console.WriteLine("Metran-520 was not found");
+                Console.WriteLine("Metran-520 was not found in UNLOCK");
             }
-
+            Console.WriteLine("Metran-520 FOUND OKEY in UNLOCK");
             if (this._driver.Open(info))
             {
+                Console.WriteLine("Metran-520 OPENED in UNLOCK");
+                Console.WriteLine($"PRESSURE SERVICE Unlock - DRIVER HASH: {_driver.GetHashCode()}");
                 var answerGetSerialNumber = await this._driver.ExchangeAsync(this._createGetSerialNumber());
                 var answerGetId = await this._driver.ExchangeAsync(this._createGetId());
 
@@ -95,28 +109,28 @@ namespace MyAvaloniaApp
 
                         if (answerUnlock)
                         {
-                            System.Diagnostics.Debug.WriteLine($"Access level: {answerUnlock.Level}");
+                            Console.WriteLine($"Access level: {answerUnlock.Level}");
                         }
                         else
                         {
-                            System.Diagnostics.Debug.WriteLine($"Status: {answerUnlock.Status}");
+                            Console.WriteLine($"Status: {answerUnlock.Status}");
                         }
                     }
                     else
                     {
                         var answerUnlock = await this._driver.ExchangeAsync(this._createUnlock(key));
-                        System.Diagnostics.Debug.WriteLine($"Status: {answerUnlock.Status}");
+                        Console.WriteLine($"Status: {answerUnlock.Status}");
                     }
                 }
                 this._driver.Close();
             }
         }
 
-        public async Task<double?> RunAsync(TimeSpan duration)
+        public async Task<(double? Pressure, double? Current)> RunAsync(TimeSpan duration)
         {
             Console.WriteLine("PRESSURE START");
-            await Unlock();
-            Console.WriteLine("PRESSURE UNLOCKED");
+            //await Unlock();
+            
 
             var infos = await this._enumerator.GetAsync();
             var info = infos.FirstOrDefault();
@@ -124,13 +138,17 @@ namespace MyAvaloniaApp
             if (info is null)
             {
                 Console.WriteLine("Metran-520 was not found PRESSURE OLD");
-                return null;
+                return (null, null);
             }
+            Console.WriteLine("Metran-520 FOUND OKEY IN PRESSURE SERVICE");
 
             if (this._driver.Open(info))
             {
-                Console.WriteLine($"DRIVER HASH: {_driver.GetHashCode()}");
+                Console.WriteLine($"PRESSURE SERVICE RunAsync - DRIVER HASH: {_driver.GetHashCode()}");
                 var values = new List<double>();
+                var valuesCurrent = new List<double>();
+                double? averageCurrent = null;
+                double? averagePressure = null;
 
                 try
                 {
@@ -151,17 +169,22 @@ namespace MyAvaloniaApp
                             {
                                 Console.WriteLine($"PRESSURE отправка запроса.");   
                                 var answerMeas =
-                                    await this._driver.ExchangeAsync(
-                                        this._createGetPressure(
-                                            (ModuleAddress)answerGetInfo.Info.Info.ShortAddr));
+                                    await this._driver.ExchangeAsync(this._createGetPressure((ModuleAddress)answerGetInfo.Info.Info.ShortAddr));
                                 Console.WriteLine("PRESSURE: ответ получен");
+                                var answerCurrent = await _driver.ExchangeAsync(_createMeas());
+
+                                if (answerCurrent)
+                                {
+                                    valuesCurrent.Add(answerCurrent.Value);
+                                    Console.WriteLine($"Current: {answerCurrent.Value}");
+                                }
+
 
                                 if (answerMeas)
                                 {
                                     values.Add(answerMeas.Value);
 
-                                    Console.WriteLine(
-                                        $"Pressure: {answerMeas.Value:F5}");
+                                    Console.WriteLine( $"Pressure: {answerMeas.Value:F5}");
                                 }
                                 else
                                 {
@@ -171,16 +194,23 @@ namespace MyAvaloniaApp
 
                                 await Task.Delay(300);
                             }
+                            if(valuesCurrent.Count > 0)
+                            {
+                                averageCurrent = valuesCurrent.Average();
+                                Console.WriteLine(
+                                    $"Average current: {averageCurrent:F5}");
+                            }
 
                             if (values.Count > 0)
                             {
-                                double average = values.Average();
+                                averagePressure = values.Average();
 
                                 Console.WriteLine(
-                                    $"Average pressure: {average:F5}");
+                                    $"Average pressure: {averagePressure:F5}");
 
-                                return average;
+                             
                             }
+                            return (averagePressure, averageCurrent);
                         }
                     }
                 }
@@ -190,7 +220,7 @@ namespace MyAvaloniaApp
                 }
             }
 
-            return null;
+            return (null, null);
         }
     }
 }
