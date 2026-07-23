@@ -24,7 +24,7 @@ namespace MyAvaloniaApp.Views
             _ownerWindow = (NewVerificationWindow)ownerWindow;
             BtnStartReading.Click += BtnStartReadingClicked;
 
-            Console.WriteLine("VerificationOperationsView PFPFFPFPFP");
+            Console.WriteLine("VerificationOperationsView");
 
             //InitializeSampleData();
             //LoadInstruments();
@@ -44,6 +44,16 @@ namespace MyAvaloniaApp.Views
             return;
         }
 
+        public void LoadPoints(int instrumentId)
+        {
+            List<CalibrationPointModel> points = DbHelper.GetLoadingPointsByVerificationAndInstrument(_ownerWindow.VerificationId, instrumentId);
+            if (points != null)
+            {
+                DgProcessData.ItemsSource = points;
+            }
+            return;
+        }
+
         private void InitializeSampleData()
         {
             
@@ -52,8 +62,12 @@ namespace MyAvaloniaApp.Views
 
         private void OnDeviceSelectionChanged(object? sender, SelectionChangedEventArgs e)
         {
-            // Здесь можно подгружать данные процесса для выбранного прибора
-            // Например, по Channel или SerialNumber
+            Console.WriteLine("OnDeviceSelectionChanged");
+            var selectedInstrument = DgDevices.SelectedItem as InstrumentModel;
+            if (selectedInstrument != null)
+            {
+                LoadPoints(selectedInstrument.Id);
+            }
         }
 
         public void BtnStartReadingClicked(object? sender, RoutedEventArgs e)
@@ -63,6 +77,7 @@ namespace MyAvaloniaApp.Views
             {   
                 var dialog = new DataReadingWindow(
                     _ownerWindow, 
+                    this,
                     selectedInstrument.Id, 
                     Bootstrapper.Container.Resolve<MeasurementService>(),
                     Bootstrapper.Container.Resolve<PressureService>()

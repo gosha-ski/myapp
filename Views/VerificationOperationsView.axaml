@@ -30,12 +30,18 @@
 
         <!-- Нижняя часть: таблица данных процесса -->
         <GroupBox Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Header="Данные процесса для выбранного прибора" Margin="0,0,0,0">
-            <DataGrid x:Name="DgProcessData" AutoGenerateColumns="False">
+            <DataGrid 
+				x:Name="DgProcessData" 
+				AutoGenerateColumns="False"
+				x:DataType="models:CalibrationPointModel"
+				>
                 <DataGrid.Columns>
-                    <DataGridTextColumn Header="№"  Width="40"/>
-                    <DataGridTextColumn Header="Точка, МПа"  Width="100"/>
-                    <DataGridTextColumn Header="Эталон, МПа"  Width="100"/>
-                    <DataGridTextColumn Header="Расч., мА"  Width="100"/>
+                    <DataGridTextColumn Header="Номер" Binding="{Binding PointIndex}" Width="130"/>
+                    <DataGridTextColumn Header="Точка," Binding="{Binding PointValueMpa}"  Width="130"/>
+                    <DataGridTextColumn Header="Эталон, МПа"  Binding="{Binding TemplateValue}" Width="130"/>
+                    <DataGridTextColumn Header="Расч., мА"   Binding="{Binding CalcValue}" Width="130"/>
+					<DataGridTextColumn Header="Прибор, мА"  Binding="{Binding InstrumentValue}" Width="130"/>
+					<DataGridTextColumn Header="Ошибка., мА"  Binding="{Binding Error}" Width="130"/>
                 </DataGrid.Columns>
             </DataGrid>
         </GroupBox>

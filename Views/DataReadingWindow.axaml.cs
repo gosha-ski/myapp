@@ -13,13 +13,15 @@ namespace MyAvaloniaApp.Views
     {
         //public ObservableCollection<CalibrationPointModel> CalibrationPoints { get; } = new();
         private readonly NewVerificationWindow _ownerWindow;
+        private readonly VerificationOperationsView _ownerControl;
         private int _instrumentId;
 
         private readonly MeasurementService _measurement;
         private readonly PressureService _pressureService;
 
         public DataReadingWindow(
-            Window ownerWindow, 
+            Window ownerWindow,
+            UserControl ownerControl,
             int instrumentId, 
             MeasurementService measurement,
             PressureService pressureService
@@ -29,6 +31,7 @@ namespace MyAvaloniaApp.Views
             _measurement = measurement;
             _pressureService = pressureService;
             _ownerWindow = (NewVerificationWindow)ownerWindow;
+            _ownerControl = (VerificationOperationsView)ownerControl;
             _instrumentId = instrumentId;
             InitializeData();
         }
@@ -50,20 +53,11 @@ namespace MyAvaloniaApp.Views
                 double InputTemplateValue = 0 ; 
                 double OutputTemplateValue = 0 ;
 
-                //double? AverageCurrent = await _measurement.ReadAverageAsync(TimeSpan.FromSeconds(222));
                 double? AverageCurrent = 0;
-
+                await _pressureService.Unlock();
                 var Result = await _pressureService.RunAsync(TimeSpan.FromSeconds(5));
 
-                //await _pressureService.Unlock();
-
-                //var currentTask = _measurement.ReadAverageAsync(TimeSpan.FromSeconds(5));
-                //var pressureTask = _pressureService.RunAsync(TimeSpan.FromSeconds(5));
-
-                //await Task.WhenAll(currentTask, pressureTask);
-
-                //double? AverageCurrent = await currentTask;
-                //double? AveragePressure = await pressureTask;
+     
 
                 Console.WriteLine(
                     $"BtnFixPointClicked|| InputTemplateValue: {InputTemplateValue};  " +
@@ -71,6 +65,7 @@ namespace MyAvaloniaApp.Views
                     );
                 DbHelper.UpdateLoadingPointValues(selectedItem.LoadingPointId, Result.Pressure, Result.Current );
                 InitializeData();
+                _ownerControl.LoadPoints(_instrumentId);
             }
 
         }
