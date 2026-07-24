@@ -134,6 +134,7 @@ public static class DbHelper
                 Id                 INTEGER PRIMARY KEY AUTOINCREMENT,
                 VerificationId     INTEGER NOT NULL UNIQUE,
                 Unit               TEXT,
+                
 
                 FOREIGN KEY (VerificationId) REFERENCES Verification(Id) ON DELETE CASCADE
             );";

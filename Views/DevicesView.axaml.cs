@@ -62,7 +62,7 @@ namespace MyAvaloniaApp.Views
         private async void OnSetChannelClick(object? sender, RoutedEventArgs e)
         {
             var selectedItem = SelectedInstrumentsGrid.SelectedItem as InstrumentWithChannelModel;
-            Console.WriteLine($"OnSetChannelClick {selectedItem.Id}");
+            
             if (selectedItem != null)
             {
                 var dialog = new SetChannelWindow(_ownerWindow.VerificationId, selectedItem.Id);
