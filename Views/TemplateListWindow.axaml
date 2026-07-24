@@ -49,7 +49,7 @@
                        Margin="0,0,0,8"/>
             <Button Content="Добавить эталон"
                     Margin="0,2" Click="BtnAddTemplateClicked"/>
-            <Button Content="Редактировать эталон"
+            <Button Content="Редактировать эталон" Click="BtnEditTemplateClicked"
                     Margin="0,2"/>
             <Button Content="Удалить эталон" Click="BtnDeleteTemplateClicked"
                     Margin="0,2"/>

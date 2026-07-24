@@ -50,8 +50,13 @@ namespace MyAvaloniaApp.Views
         {
             if (Devices.Count > 0) 
                 Devices.RemoveAt(Devices.Count - 1);
-            //DbHelper.RemoveInstrumentFromVerification(_ownerWindow.VerificationId, )
-            Console.WriteLine("1234");
+            var selectedItem = SelectedInstrumentsGrid.SelectedItem as InstrumentWithChannelModel;
+            if(selectedItem != null)
+            {
+                DbHelper.RemoveInstrumentFromVerification(_ownerWindow.VerificationId, selectedItem.Id);
+                LoadInstruments();
+            }
+            
         }
 
         private async void OnSetChannelClick(object? sender, RoutedEventArgs e)

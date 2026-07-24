@@ -726,6 +726,49 @@ public static class DbHelper
 
 
 
+    public static TemplateModel? GetTemplateById(int templateId)
+    {
+        using var conn = new SqliteConnection(ConnectionString);
+        conn.Open();
+
+        const string sql = @"
+        SELECT
+            Id,
+            DeviceType,
+            FullName,
+            SerialNumber,
+            Inaccuracy,
+            InaccuracyMethodCode,
+            CurrentRange,
+            Units,
+            LowerLimit,
+            UpperLimit
+        FROM Templates
+        WHERE Id = @TemplateId;";
+
+        using var cmd = new SqliteCommand(sql, conn);
+        cmd.Parameters.AddWithValue("@TemplateId", templateId);
+
+        using var reader = cmd.ExecuteReader();
+        if (!reader.Read())
+            return null; // шаблона с таким Id нет
+
+        var ord = reader.GetOrdinal;
+
+        return new TemplateModel
+        {
+            Id = reader.GetInt32(ord("Id")),
+            DeviceType = reader.IsDBNull(ord("DeviceType")) ? null : reader.GetString(ord("DeviceType")),
+            FullName = reader.IsDBNull(ord("FullName")) ? null : reader.GetString(ord("FullName")),
+            SerialNumber = reader.IsDBNull(ord("SerialNumber")) ? null : reader.GetString(ord("SerialNumber")),
+            Inaccuracy = reader.IsDBNull(ord("Inaccuracy")) ? (double?)null : reader.GetDouble(ord("Inaccuracy")),
+            InaccuracyMethodCode = reader.GetInt32(ord("InaccuracyMethodCode")),
+            CurrentRange = reader.IsDBNull(ord("CurrentRange")) ? null : reader.GetString(ord("CurrentRange")),
+            Units = reader.IsDBNull(ord("Units")) ? null : reader.GetString(ord("Units")),
+            LowerLimit = reader.IsDBNull(ord("LowerLimit")) ? (double?)null : reader.GetDouble(ord("LowerLimit")),
+            UpperLimit = reader.IsDBNull(ord("UpperLimit")) ? (double?)null : reader.GetDouble(ord("UpperLimit"))
+        };
+    }
 
 
     public static void SaveTemplate(TemplateModel template)
@@ -755,6 +798,48 @@ public static class DbHelper
         cmd.ExecuteNonQuery();
 
     }
+
+    public static void EditTemplate(TemplateModel template)
+    {
+        if (template.Id <= 0)
+            throw new ArgumentException("Id шаблона должен быть положительным", nameof(template.Id));
+
+        using var conn = new SqliteConnection(ConnectionString);
+        conn.Open();
+
+        const string sql = @"
+        UPDATE Templates
+        SET
+            DeviceType          = @DeviceType,
+            FullName            = @FullName,
+            SerialNumber        = @SerialNumber,
+            Inaccuracy          = @Inaccuracy,
+            InaccuracyMethodCode= @InaccuracyMethodCode,
+            CurrentRange        = @CurrentRange,
+            Units               = @Units,
+            LowerLimit          = @LowerLimit,
+            UpperLimit          = @UpperLimit
+        WHERE Id = @Id;";
+
+        using var cmd = new SqliteCommand(sql, conn);
+
+        cmd.Parameters.AddWithValue("@Id", template.Id);
+        cmd.Parameters.AddWithValue("@DeviceType", (object?)template.DeviceType ?? DBNull.Value);
+        cmd.Parameters.AddWithValue("@FullName", (object?)template.FullName ?? DBNull.Value);
+        cmd.Parameters.AddWithValue("@SerialNumber", (object?)template.SerialNumber ?? DBNull.Value);
+        cmd.Parameters.AddWithValue("@Inaccuracy", (object?)template.Inaccuracy ?? DBNull.Value);
+        cmd.Parameters.AddWithValue("@InaccuracyMethodCode", template.InaccuracyMethodCode);
+        cmd.Parameters.AddWithValue("@CurrentRange", (object?)template.CurrentRange ?? DBNull.Value);
+        cmd.Parameters.AddWithValue("@Units", (object?)template.Units ?? DBNull.Value);
+        cmd.Parameters.AddWithValue("@LowerLimit", (object?)template.LowerLimit ?? DBNull.Value);
+        cmd.Parameters.AddWithValue("@UpperLimit", (object?)template.UpperLimit ?? DBNull.Value);
+
+        int rowsAffected = cmd.ExecuteNonQuery();
+
+        if (rowsAffected == 0)
+            throw new InvalidOperationException($"Шаблон с Id={template.Id} не найден — обновление не выполнено.");
+    }
+
 
     public static void DeleteTemplate(int templateId)
     {

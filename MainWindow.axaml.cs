@@ -59,11 +59,14 @@ public partial class MainWindow : Window
     public void BtnContinueVerificationClicked(object? sender, RoutedEventArgs e)
     {
         var selectedItem = VerificationsGrid.SelectedItem as VerificationModel;
-        int verificationId = selectedItem.Id;
-        Console.WriteLine($"BtnContinueVerificationClicked selectedItem.Id:{verificationId}");
-  
-        var dialog = new NewVerificationWindow(verificationId);
-        dialog.ShowDialog(this);
+       
+        if (selectedItem != null) 
+        {
+            int verificationId = selectedItem.Id;
+            Console.WriteLine($"BtnContinueVerificationClicked selectedItem.Id:{verificationId}");
+            var dialog = new NewVerificationWindow(verificationId);
+            dialog.ShowDialog(this);
+        }
     }
 
     public void BtnDeleteVerificationClicked(object? sender, RoutedEventArgs e)
