@@ -582,6 +582,65 @@ public static class DbHelper
         }
     }
 
+
+    public static List<InstrumentWithChannelModel> GetInstrumentsWithChannelsByVerificationId(int verificationId)
+    {
+        var result = new List<InstrumentWithChannelModel>();
+
+        using var conn = new SqliteConnection(ConnectionString);
+        conn.Open();
+
+        const string sql = @"
+        SELECT
+            i.Id, i.TypeCode, i.Model, i.SerialNumber, i.InventoryNumber,
+            i.IntervalYears, i.Location, i.InServiceDate, i.Units,
+            i.LowerLimit, i.UpperLimit, i.AccuracyClass, i.VariationLimit,
+            i.AccuracyMethodCode,
+            vi.Channel
+        FROM Instruments AS i
+        INNER JOIN VerificationInstrument AS vi
+            ON i.Id = vi.InstrumentId
+        WHERE vi.VerificationId = @VerificationId;";
+
+        using var cmd = new SqliteCommand(sql, conn);
+        cmd.Parameters.AddWithValue("@VerificationId", verificationId);
+
+        using var reader = cmd.ExecuteReader();
+
+        var ord = reader.GetOrdinal;
+
+        while (reader.Read())
+        {
+            var instrument = new InstrumentWithChannelModel
+            {
+                Id = reader.GetInt32(ord("Id")),
+                TypeCode = reader.GetInt32(ord("TypeCode")),
+                Model = reader.IsDBNull(ord("Model")) ? null : reader.GetString(ord("Model")),
+                SerialNumber = reader.IsDBNull(ord("SerialNumber")) ? null : reader.GetString(ord("SerialNumber")),
+                InventoryNumber = reader.IsDBNull(ord("InventoryNumber")) ? null : reader.GetString(ord("InventoryNumber")),
+                IntervalYears = reader.IsDBNull(ord("IntervalYears")) ? (int?)null : reader.GetInt32(ord("IntervalYears")),
+                Location = reader.IsDBNull(ord("Location")) ? null : reader.GetString(ord("Location")),
+                InServiceDate = reader.IsDBNull(ord("InServiceDate"))
+                    ? DateTime.Today
+                    : DateTime.Parse(reader.GetString(ord("InServiceDate"))),
+                Units = reader.IsDBNull(ord("Units"))
+                    ? null
+                    : GetUnitStringByCode(reader.GetInt32(ord("Units"))),
+                LowerLimit = reader.IsDBNull(ord("LowerLimit")) ? (double?)null : reader.GetDouble(ord("LowerLimit")),
+                UpperLimit = reader.IsDBNull(ord("UpperLimit")) ? (double?)null : reader.GetDouble(ord("UpperLimit")),
+                AccuracyClass = reader.IsDBNull(ord("AccuracyClass")) ? (double?)null : reader.GetDouble(ord("AccuracyClass")),
+                VariationLimit = reader.IsDBNull(ord("VariationLimit")) ? (double?)null : reader.GetDouble(ord("VariationLimit")),
+                AccuracyMethodCode = reader.GetInt32(ord("AccuracyMethodCode")),
+                Channel = reader.IsDBNull(ord("Channel")) ? (int?)null : reader.GetInt32(ord("Channel"))
+            };
+
+            result.Add(instrument);
+        }
+
+        return result;
+    }
+
+
     public static List<InstrumentModel> GetInstrumentsByVerificationId(int verificationId)
     {
         var result = new List<InstrumentModel>();

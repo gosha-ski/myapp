@@ -24,7 +24,9 @@ namespace MyAvaloniaApp.Views
 
         private void LoadInstruments()
         {
-            List<InstrumentModel> instruments = DbHelper.GetInstrumentsByVerificationId(_ownerWindow.VerificationId);
+            //InstrumentWithChannelModel
+            //List<InstrumentModel> instruments = DbHelper.GetInstrumentsByVerificationId(_ownerWindow.VerificationId);
+            List<InstrumentWithChannelModel> instruments = DbHelper.GetInstrumentsWithChannelsByVerificationId(_ownerWindow.VerificationId);
             SelectedInstrumentsGrid.ItemsSource = instruments;
         }
 
@@ -34,11 +36,11 @@ namespace MyAvaloniaApp.Views
             await dialog.ShowDialog(_ownerWindow);
             if(dialog.SelectedInstrument!=null){
                 InstrumentModel instrument = dialog.SelectedInstrument;
-                //Console.WriteLine($"INSIDE OnAddClick TypeCode:{instrument.TypeCode}");
                 Devices.Add(instrument);
                 _ownerWindow.SelectedInstruments.Add(instrument);
-                SelectedInstrumentsGrid.ItemsSource = Devices;
+                
                 DbHelper.AddInstrumentToVerification(_ownerWindow.VerificationId, instrument.Id, null);
+                LoadInstruments();
             }
         }
 
@@ -54,10 +56,15 @@ namespace MyAvaloniaApp.Views
 
         private async void OnSetChannelClick(object? sender, RoutedEventArgs e)
         {
-            var selectedItem = SelectedInstrumentsGrid.SelectedItem as InstrumentModel;
-            Console.WriteLine($"{selectedItem.Id}");
-            var dialog = new SetChannelWindow(_ownerWindow.VerificationId, selectedItem.Id);
-            await dialog.ShowDialog(_ownerWindow);
+            var selectedItem = SelectedInstrumentsGrid.SelectedItem as InstrumentWithChannelModel;
+            Console.WriteLine($"OnSetChannelClick {selectedItem.Id}");
+            if (selectedItem != null)
+            {
+                var dialog = new SetChannelWindow(_ownerWindow.VerificationId, selectedItem.Id);
+                await dialog.ShowDialog(_ownerWindow);
+                LoadInstruments();
+            }
+           
         }
 
         

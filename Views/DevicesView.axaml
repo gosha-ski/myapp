@@ -11,10 +11,10 @@
             <DataGrid
                     x:Name="SelectedInstrumentsGrid"
                     AutoGenerateColumns="False"
-                    x:DataType="models:InstrumentModel"  
+                    x:DataType="models:InstrumentWithChannelModel"  
                     >
                 <DataGrid.Columns>
-                    <DataGridTextColumn Header="№ канала" Binding="{Binding TypeCode}" Width="100"/>
+                    <DataGridTextColumn Header="№ канала" Binding="{Binding Channel}" Width="100"/>
                     <DataGridTextColumn Header="Наименование" Binding="{Binding Model}" Width="200"/>
                     <DataGridTextColumn Header="Серийный №" Binding="{Binding SerialNumber}" Width="150"/>
                 </DataGrid.Columns>
